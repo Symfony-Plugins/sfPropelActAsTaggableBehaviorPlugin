@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+ <name>sfPropelActAsTaggableBehaviorPlugin</name>
+ <channel>pear.symfony-project.com</channel>
+ <summary>Propel taggable behavior</summary>
+ <description>This behavior permits to attach tags to Propel objects. It includes tag-clouds generation and helpers to display these clouds.</description>
+ <lead>
+  <name>Xavier Lacot</name>
+  <user>xavier</user>
+  <email>xavier@lacot.org</email>
+  <active>yes</active>
+ </lead>
+ <date>2007-12-11</date>
+ <time>10:15:56</time>
+ <version>
+  <release>0.4.0</release>
+  <api>0.4.0</api>
+ </version>
+ <stability>
+  <release>beta</release>
+  <api>beta</api>
+ </stability>
+ <license uri="http://www.symfony-project.com/license">MIT license</license>
+ <notes>
+  * added machine tags support (also called "triple tags") (thanks to Michael Nolan)
+ </notes>
+ <contents>
+  <dir name="/">
+   <dir name="config">
+    <file name="config.php" role="data" />
+    <file name="schema.yml" role="data" />
+   </dir>
+   <dir name="lib">
+    <dir name="helper">
+     <!-- helpers -->
+     <file name="TagsHelper.php" role="data" />
+    </dir>
+    <dir name="model">
+     <!-- model classes -->
+     <dir name="map" />
+     <dir name="om" />
+     <file name="Tag.php" role="data" />
+     <file name="Tagging.php" role="data" />
+     <file name="TaggingPeer.php" role="data" />
+     <file name="TagPeer.php" role="data" />
+    </dir>
+     <file name="sfPropelActAsTaggableBehavior.class.php" role="data" />
+     <file name="sfPropelActAsTaggableToolkit.class.php" role="data" />
+   </dir>
+   <dir name="test">
+    <dir name="unit">
+     <!-- unit tests -->
+     <file name="sfPropelActAsTaggableBehaviorTest.php" role="data" />
+    </dir>
+   </dir>
+   <file name="README" role="data" />
+   <file name="LICENSE" role="data" />
+  </dir>
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>5.0.0</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.1</min>
+   </pearinstaller>
+   <package>
+    <name>symfony</name>
+    <channel>pear.symfony-project.com</channel>
+    <min>1.0.0</min>
+    <max>1.1.0</max>
+    <exclude>1.1.0</exclude>
+   </package>
+  </required>
+ </dependencies>
+ <phprelease />
+ <changelog>
+  <release>
+   <version>
+    <release>0.4.0</release>
+    <api>0.4.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2007-12-11</date>
+   <license uri="http://www.symfony-project.com/license">MIT license</license>
+   <notes>* added machine tags support (also called "triple tags") (thanks to Michael Nolan)</notes>
+  </release>
+  <release>
+   <version>
+    <release>0.3.0</release>
+    <api>0.3.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2007-07-02</date>
+   <license uri="http://www.symfony-project.com/license">MIT license</license>
+   <notes>* fixed bug in tags removal (thanks to Alexander Alexandrov)</notes>
+  </release>
+  <release>
+   <version>
+    <release>0.2.0</release>
+    <api>0.2.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2007-06-27</date>
+   <license uri="http://www.symfony-project.com/license">MIT license</license>
+   <notes>* indexes on tags model
+* bugfixes
+* thanks to Nicolas Perriault for his useful comments</notes>
+  </release>
+  <release>
+   <version>
+    <release>0.1.0</release>
+    <api>0.1.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2007-05-21</date>
+   <license uri="http://www.symfony-project.com/license">MIT license</license>
+   <notes>Initial public release
+ * add/remove tag(s) on an object
+ * multi-tags object search
+ * multi-models selection
+ * tag cloud generation
+ * related tags handling
+ * unit-tested</notes>
+  </release>
+ </changelog>
+</package>
