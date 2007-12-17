@@ -77,6 +77,9 @@ $object->addTag('tata');
 $object->removeTag('tata');
 $t->ok(!$object->hasTag('tata'), 'a non-saved tag can also be removed.');
 
+$object->addTag('tu\'tu');
+$t->ok($object->hasTag('tu\'tu'), 'a tag can contain a quote.');
+
 $object2 = _create_object();
 $object_tags = $object2->getTags();
 $t->ok(count($object_tags) == 0, 'a new object has no tag, even if other tagged objects exist.');
