@@ -1,10 +1,10 @@
 <?php
 /*
  * This file is part of the sfPropelActAsTaggableBehavior package.
- * 
+ *
  * (c) 2007 Xavier Lacot <xavier@lacot.org>
  * (c) 2007 Michael Nolan
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -12,9 +12,9 @@
 class sfPropelActAsTaggableToolkit
 {
   /**
-   * "Cleans" a string in order it to be used as a tag. Intended for strings 
+   * "Cleans" a string in order it to be used as a tag. Intended for strings
    * representing a single tag
-   * 
+   *
    * @param      String    $tag
    * @return     bool
    */
@@ -26,14 +26,16 @@ class sfPropelActAsTaggableToolkit
   /**
    * "Cleans" a string in order it to be used as a tag
    * Intended for strings representing a single tag
-   * 
+   *
    * @param      mixed     $tag
    * @return     mixed
    */
   public static function explodeTagString($tag)
   {
-    if (is_string($tag) && false !== strpos($tag, ','))
+    if (is_string($tag)
+        && (false !== strpos($tag, ',') || preg_match('/\n/', $tag)))
     {
+      $tag = preg_replace('/\r?\n/', ',', $tag);
       $tag = explode(',', $tag);
       $tag = array_map('trim', $tag);
       $tag = array_map('rtrim', $tag);
@@ -43,9 +45,9 @@ class sfPropelActAsTaggableToolkit
   }
 
   /**
-   * Extract triple tag values from tag.  Returned array will contain four 
+   * Extract triple tag values from tag.  Returned array will contain four
    * elements: tagname (same as input), namespace, key and value.
-   * 
+   *
    * @param      string     $tag
    * @return     array
    */
@@ -64,9 +66,9 @@ class sfPropelActAsTaggableToolkit
   }
 
   /**
-   * Formats a tag string/array in a pretty string. For instance, will convert 
+   * Formats a tag string/array in a pretty string. For instance, will convert
    * tag3,tag1,tag2 into the following string : "tag1", "tag2" and "tag3"
-   * 
+   *
    * @param      array    $tags
    * @return     String
    */
@@ -108,7 +110,7 @@ class sfPropelActAsTaggableToolkit
 
   /**
    * Returns true if the passed model name is taggable
-   * 
+   *
    * @param      mixed     $model
    * @return     boolean
    */
@@ -133,7 +135,7 @@ class sfPropelActAsTaggableToolkit
     while (!$is_taggable && ($i < $callables_count))
     {
       $callable = $callables[$i][0];
-      $is_taggable = (is_object($callable) 
+      $is_taggable = (is_object($callable)
                       && (get_class($callable) == 'sfPropelActAsTaggableBehavior'));
       $i++;
     }
@@ -144,7 +146,7 @@ class sfPropelActAsTaggableToolkit
   /**
    * Normalizes a tag cloud, ie. changes a (tag => weight) array into a
    * (tag => normalized_weight) one. Normalized weights range from -2 to 2.
-   * 
+   *
    * @param      array  $tag_cloud
    * @return     array
    */

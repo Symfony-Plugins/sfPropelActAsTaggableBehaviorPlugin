@@ -39,7 +39,7 @@ $browser = new sfTestBrowser();
 $browser->initialize();
 
 // start tests
-$t = new lime_test(36, new lime_output_color());
+$t = new lime_test(53, new lime_output_color());
 
 
 // these tests check for the tags attachement consistency
@@ -104,7 +104,7 @@ $object->removeAllTags();
 $t->ok(!$object->hasTag(), 'tags can all be removed at once.');
 
 $object = _create_object();
-$object->addTag('toto,tutu,tata');
+$object->addTag('toto,international,tata');
 $object->save();
 $id = $object->getPrimaryKey();
 $object = call_user_func(array(_create_object()->getPeer(), 'retrieveByPk'), $id);
@@ -113,7 +113,7 @@ $object->addTag('tata');
 $object->save();
 $object = call_user_func(array(_create_object()->getPeer(), 'retrieveByPk'), $id);
 $object_tags = $object->getTags();
-$t->ok(count($object_tags) == 3, 'when removing one previously saved tags, then restoring it, and then saving it again, tags are not duplicated.');
+$t->ok(count($object_tags) == 3, 'when removing one previously saved tag, then restoring it, and then saving it again, this tag is not duplicated.');
 
 $object = _create_object();
 $object->addTag('toto,tutu,tata');
@@ -169,6 +169,21 @@ $object->addTag('titi,tutu');
 $object_tags = $object->getTags();
 $t->ok((count($object_tags) == 3) && $object->hasTag('tutu') && $object->hasTag('titi'), 'tags can be added with a comma-separated string.');
 $t->ok($object->hasTag('titi, tutu'), 'comma-separated strings are divided into several tags.');
+
+$object = _create_object();
+$object->addTag('titi
+tutu');
+$object_tags = $object->getTags();
+$t->ok((count($object_tags) == 2) && $object->hasTag('titi') && $object->hasTag('tutu'), 'tags can be added using line breaks as separators.');
+$t->ok($object->hasTag('titi
+tutu'), 'line-breaks-separated strings are divided into several tags.');
+
+$object = _create_object();
+$object->addTag('titi
+
+tutu');
+$object_tags = $object->getTags();
+$t->ok((count($object_tags) == 2) && $object->hasTag('titi') && $object->hasTag('tutu'), 'when adding tags using line breaks as separators, remove blank lines.');
 
 $object = _create_object();
 $object->addTag(array('titi', 'tutu'));
