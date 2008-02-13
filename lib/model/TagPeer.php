@@ -335,7 +335,7 @@ class TagPeer extends BaseTagPeer
       $c = new Criteria();
     }
 
-    if (!class_exists($model) || !is_callable(new $model, 'getPeer'))
+    if (!class_exists($model) || !is_callable(array(new $model, 'getPeer')))
     {
       throw new PropelException(sprintf('The class "%s" does not exist, or it is not a model class.',
                                         $model));
@@ -381,7 +381,7 @@ class TagPeer extends BaseTagPeer
     // Taggable model class option
     if (isset($options['model']))
     {
-      if (!class_exists($options['model']) || !is_callable(new $options['model'], 'getPeer'))
+      if (!class_exists($options['model']) || !is_callable(array(new $options['model'], 'getPeer')))
       {
         throw new PropelException(sprintf('The class "%s" does not exist, or it is not a model class.',
                                           $options['model']));
