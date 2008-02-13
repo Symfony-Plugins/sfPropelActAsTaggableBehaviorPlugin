@@ -123,7 +123,7 @@ class sfPropelActAsTaggableToolkit
 
     if (!is_string($model))
     {
-      throw new Exception('The param passed to the metod isTaggable must be a string.');
+      throw new Exception('The param passed to the method isTaggable must be an object or a string.');
     }
 
     $base_class = sprintf('Base%s', ucfirst($model));

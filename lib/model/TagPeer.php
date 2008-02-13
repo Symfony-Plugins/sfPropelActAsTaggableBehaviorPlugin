@@ -1,27 +1,27 @@
 <?php
 /*
  * This file is part of the sfPropelActAsTaggableBehavior package.
- * 
+ *
  * (c) 2007 Xavier Lacot <xavier@lacot.org>
- * 
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 /**
  * Subclass for performing query and update operations on the 'tag' table.
- * 
+ *
  * @package plugins.sfPropelActAsTaggableBehaviorPlugin.lib.model
- */ 
+ */
 class TagPeer extends BaseTagPeer
 {
   /**
    * Returns all tags, eventually with a limit option.
-   * The first optionnal parameter permits to add some restrictions on the 
+   * The first optionnal parameter permits to add some restrictions on the
    * objects the selected tags are related to.
    * The second optionnal parameter permits to restrict the tag selection with
    * different criterias
-   * 
+   *
    * @param      Criteria    $c
    * @param      array       $options
    * @return     array
@@ -68,11 +68,11 @@ class TagPeer extends BaseTagPeer
 
   /**
    * Returns all tags, sorted by name, with their number of occurencies.
-   * The first optionnal parameter permits to add some restrictions on the 
+   * The first optionnal parameter permits to add some restrictions on the
    * objects the selected tags are related to.
    * The second optionnal parameter permits to restrict the tag selection with
    * different criterias
-   * 
+   *
    * @param      Criteria    $c
    * @param      array       $options
    * @return     array
@@ -134,10 +134,10 @@ class TagPeer extends BaseTagPeer
   }
 
   /**
-   * Returns the names of the models that have instances tagged with one or 
-   * several tags. The optionnal parameter might be a string, an array, or a 
+   * Returns the names of the models that have instances tagged with one or
+   * several tags. The optionnal parameter might be a string, an array, or a
    * comma separated string
-   * 
+   *
    * @param      mixed       $tags
    * @return     array
    */
@@ -189,14 +189,14 @@ class TagPeer extends BaseTagPeer
   }
 
   /**
-   * Returns the most popular tags with their associated weight. See 
+   * Returns the most popular tags with their associated weight. See
    * sfPropelActAsTaggableToolkit::normalize for more details.
-   * 
-   * The first optionnal parameter permits to add some restrictions on the 
+   *
+   * The first optionnal parameter permits to add some restrictions on the
    * objects the selected tags are related to.
    * The second optionnal parameter permits to restrict the tag selection with
    * different criterias
-   * 
+   *
    * @param      Criteria    $c
    * @param      array       $options
    * @return     array
@@ -218,17 +218,17 @@ class TagPeer extends BaseTagPeer
   }
 
   /**
-   * Returns the tags that are related to one or more other tags, with their 
-   * associated weight (see sfPropelActAsTaggableToolkit::normalize for more 
+   * Returns the tags that are related to one or more other tags, with their
+   * associated weight (see sfPropelActAsTaggableToolkit::normalize for more
    * details).
-   * The "related tags" of one tag are the ones which have at least one 
+   * The "related tags" of one tag are the ones which have at least one
    * taggable object in common.
-   * 
-   * The first optionnal parameter permits to add some restrictions on the 
+   *
+   * The first optionnal parameter permits to add some restrictions on the
    * objects the selected tags are related to.
    * The second optionnal parameter permits to restrict the tag selection with
    * different criterias
-   * 
+   *
    * @param      mixed       $tags
    * @param      array       $options
    * @return     array
@@ -284,10 +284,10 @@ class TagPeer extends BaseTagPeer
 
   /**
    * Retrieves the objects tagged with one or several tags.
-   * 
+   *
    * The second optionnal parameter permits to restrict the tag selection with
    * different criterias
-   * 
+   *
    * @param      mixed       $tags
    * @param      array       $options
    * @return     array
@@ -313,16 +313,53 @@ class TagPeer extends BaseTagPeer
   }
 
   /**
+   * Retrieve a Criteria instance for querying tagged model objects.
+   *
+   * Example:
+   *
+   * $c = TagPeer::getTaggedWithCriteria('Article', array('tag1', 'tag2'));
+   * $c->addDescendingOrderByColumn(ArticlePeer::POSTED_AT);
+   * $c->setLimit(10);
+   * $this->articles = ArticlePeer::doSelectJoinAuthor($c);
+   *
+   * @param  string    $model  Taggable model name
+   * @param  mixed     $tags   array of tags (can be a string where tags are
+   * comma separated)
+   * @param  Criteria  $c      Existing Criteria to hydrate
+   * @return Criteria
+   */
+  public static function getTaggedWithCriteria($model, $tags = array(), Criteria $c = null)
+  {
+    if (!$c instanceof Criteria)
+    {
+      $c = new Criteria();
+    }
+
+    if (!class_exists($model) || !is_callable(new $model, 'getPeer'))
+    {
+      throw new PropelException(sprintf('The class "%s" does not exist, or it is not a model class.',
+                                        $model));
+    }
+
+    $taggings = self::getTaggings($tags, array('model' => $model));
+    $tagging = isset($taggings[$model]) ? $taggings[$model] : array();
+    $peer = get_class(call_user_func(array(new $model, 'getPeer')));
+    $c->add(constant($peer.'::ID'), $tagging, Criteria::IN);
+
+    return $c;
+  }
+
+  /**
    * Returns the taggings associated to one tag or a set of tags.
-   * 
+   *
    * The second optionnal parameter permits to restrict the results with
    * different criterias
-   * 
-   * @param      mixed       $tags
-   * @param      array       $options
+   *
+   * @param      mixed       $tags      Array of tag strings or string
+   * @param      array       $options   Array of options parameters
    * @return     array
    */
-  private static function getTaggings($tags = array(), $options = array())
+  protected static function getTaggings($tags = array(), $options = array())
   {
     $tags = sfPropelActAsTaggableToolkit::explodeTagString($tags);
 
@@ -341,8 +378,15 @@ class TagPeer extends BaseTagPeer
     $c->addSelectColumn(TaggingPeer::TAGGABLE_MODEL);
     $c->addSelectColumn(TaggingPeer::TAGGABLE_ID);
 
+    // Taggable model class option
     if (isset($options['model']))
     {
+      if (!class_exists($options['model']) || !is_callable(new $options['model'], 'getPeer'))
+      {
+        throw new PropelException(sprintf('The class "%s" does not exist, or it is not a model class.',
+                                          $options['model']));
+      }
+
       $c->add(TaggingPeer::TAGGABLE_MODEL, $options['model']);
     }
     else
@@ -408,7 +452,7 @@ class TagPeer extends BaseTagPeer
 
   /**
    * Retrives a tag by his name.
-   * 
+   *
    * @param      String      $tagname
    * @return     Tag
    */
@@ -422,7 +466,7 @@ class TagPeer extends BaseTagPeer
   /**
    * Retrieves a tag by his name. If it does not exist, creates it (but does not
    * save it)
-   * 
+   *
    * @param      String      $tagname
    * @return     Tag
    */
