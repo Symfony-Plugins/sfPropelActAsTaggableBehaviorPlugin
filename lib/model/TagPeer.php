@@ -86,6 +86,11 @@ class TagPeer extends BaseTagPeer
       $c = new Criteria();
     }
 
+    if (isset($options['limit']))
+    {
+      $c->setLimit($options['limit']);
+    }
+
     if (isset($options['model']))
     {
       $c->add(TaggingPeer::TAGGABLE_MODEL, $options['model']);
