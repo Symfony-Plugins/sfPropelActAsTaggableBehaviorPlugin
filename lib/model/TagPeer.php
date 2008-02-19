@@ -264,9 +264,9 @@ class TagPeer extends BaseTagPeer
       $c->add(TaggingPeer::TAGGABLE_ID, $tagging, Criteria::IN);
       $c->add(TaggingPeer::TAGGABLE_MODEL, $key);
       $c->addJoin(TaggingPeer::TAG_ID, TagPeer::ID);
-      $tags = TagPeer::doSelect($c);
+      $tag_objects = TagPeer::doSelect($c);
 
-      foreach ($tags as $tag)
+      foreach ($tag_objects as $tag)
       {
         if (!isset($result[$tag->getName()]))
         {
