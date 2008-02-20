@@ -21,7 +21,7 @@
  * @param   array   $options  Optionnal options array for formating the link.
  * Supported keys are:
  *  * class:  html class to be applied to the tags list
- *  * link_funktion: custom function to be used for generating each tag link
+ *  * link_function: custom function to be used for generating each tag link
  *  * link_options: html options to be applied to the generated link
  */
 function tag_cloud($tags, $route, $options = array())
