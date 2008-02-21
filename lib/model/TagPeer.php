@@ -335,6 +335,13 @@ class TagPeer extends BaseTagPeer
    */
   public static function getTaggedWithCriteria($model, $tags = array(), Criteria $c = null)
   {
+    $tags = sfPropelActAsTaggableToolkit::explodeTagString($tags);
+
+    if (is_string($tags))
+    {
+      $tags = array($tags);
+    }
+
     if (!$c instanceof Criteria)
     {
       $c = new Criteria();
