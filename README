@@ -153,7 +153,7 @@ $tags = TagPeer::getPopulars();
 
 // display the tags cloud. The tags will use the route name "@tag" which tags 
 // the request parameter "tags"
-echo tag_cloud($tags, '@tag?tags');
+echo tag_cloud($tags, '@tag?tags=');
 }}}
 
 The default size of the tag cloud is 100 items, but this value might be tweaked in app.yml:
