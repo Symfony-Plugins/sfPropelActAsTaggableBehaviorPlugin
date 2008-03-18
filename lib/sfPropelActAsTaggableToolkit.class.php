@@ -89,7 +89,7 @@ class sfPropelActAsTaggableToolkit
       sort($tags, SORT_LOCALE_STRING);
       $i = 0;
 
-      foreach ( $tags as $tag )
+      foreach ($tags as $tag)
       {
         $result .= '"'.$tag.'"';
         $i++;
@@ -156,7 +156,7 @@ class sfPropelActAsTaggableToolkit
     $levels = 5;
     $power = 0.7;
 
-    if ( count($tag_cloud) > 0 )
+    if (count($tag_cloud) > 0)
     {
       $max_count = max($tag_cloud);
       $min_count = min($tag_cloud);
