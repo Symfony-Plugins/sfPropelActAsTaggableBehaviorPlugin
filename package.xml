@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
  <name>sfPropelActAsTaggableBehaviorPlugin</name>
- <channel>pear.symfony-project.com</channel>
+ <channel>plugins.symfony-plugins.org</channel>
  <summary>Propel taggable behavior</summary>
  <description>This behavior permits to attach tags to Propel objects. It includes tag-clouds generation and helpers to display these clouds.</description>
  <lead>
@@ -44,8 +44,8 @@
      <file name="TaggingPeer.php" role="data" />
      <file name="TagPeer.php" role="data" />
     </dir>
-     <file name="sfPropelActAsTaggableBehavior.class.php" role="data" />
-     <file name="sfPropelActAsTaggableToolkit.class.php" role="data" />
+    <file name="sfPropelActAsTaggableBehavior.class.php" role="data" />
+    <file name="sfPropelActAsTaggableToolkit.class.php" role="data" />
    </dir>
    <dir name="test">
     <dir name="unit">
@@ -67,10 +67,10 @@
    </pearinstaller>
    <package>
     <name>symfony</name>
-    <channel>pear.symfony-project.com</channel>
-    <min>1.0.0</min>
-    <max>1.1.0</max>
-    <exclude>1.1.0</exclude>
+    <channel>plugins.symfony-plugins.org</channel>
+    <min>1.1.0</min>
+    <max>1.2.0</max>
+    <exclude>1.2.0</exclude>
    </package>
   </required>
  </dependencies>
