@@ -484,4 +484,17 @@ class sfPropelActAsTaggableBehavior
       }
     }
   }
+
+  /**
+   * Sets the tags of an object. As usual, the second parameter might be an
+   * array of tags or a comma-separated string.
+   *
+   * @param      BaseObject  $object
+   * @param      mixed       $tagname
+   */
+  public function setTags(BaseObject $object, $tagname)
+  {
+    $this->removeAllTags($object);
+    $this->addTag($object, $tagname);
+  }
 }

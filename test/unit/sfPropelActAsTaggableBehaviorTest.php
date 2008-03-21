@@ -39,7 +39,7 @@ $browser = new sfTestBrowser();
 $browser->initialize();
 
 // start tests
-$t = new lime_test(53, new lime_output_color());
+$t = new lime_test(54, new lime_output_color());
 
 
 // these tests check for the tags attachement consistency
@@ -189,6 +189,10 @@ $object = _create_object();
 $object->addTag(array('titi', 'tutu'));
 $object_tags = $object->getTags();
 $t->ok((count($object_tags) == 2) && $object->hasTag('tutu') && $object->hasTag('titi'), 'tags can be added with an array.');
+
+$object->setTags('wallace, gromit');
+$object_tags = $object->getTags();
+$t->ok((count($object_tags) == 2) && $object->hasTag('wallace') && $object->hasTag('gromit'), 'tags can be set directly using setTags().');
 
 unset($object);
 
