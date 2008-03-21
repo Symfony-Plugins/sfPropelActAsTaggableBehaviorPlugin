@@ -17,7 +17,7 @@ propel:
   tagging:
     _attributes:      { phpName: Tagging, package: plugins.sfPropelActAsTaggableBehaviorPlugin.lib.model }
     id:               { phpName: ID, type: integer, required: true, primaryKey: true, autoincrement: true }
-    tag_id:           varchar(100)
+    tag_id:
     taggable_model:   varchar(30)
     taggable_id:      integer
     _indexes:
