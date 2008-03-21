@@ -1,7 +1,7 @@
 propel:
-  _attributes:    { package: plugins.sfPropelActAsTaggableBehaviorPlugin.lib.model }
+  _attributes:        { package: plugins.sfPropelActAsTaggableBehaviorPlugin.lib.model }
 
-  tag:
+  sf_tag:
     _attributes:      { phpName: Tag, package: plugins.sfPropelActAsTaggableBehaviorPlugin.lib.model }
     id:               { phpName: ID, type: integer, required: true, primaryKey: true, autoincrement: true }
     name:             varchar(100)
@@ -14,10 +14,10 @@ propel:
       triple1:        [triple_namespace]
       triple2:        [triple_key]
       triple3:        [triple_value]
-  tagging:
+  sf_tagging:
     _attributes:      { phpName: Tagging, package: plugins.sfPropelActAsTaggableBehaviorPlugin.lib.model }
     id:               { phpName: ID, type: integer, required: true, primaryKey: true, autoincrement: true }
-    tag_id:
+    tag_id:           { type: integer, required: true, foreignTable: sf_tag, foreignReference: id, onDelete: CASCADE }
     taggable_model:   varchar(30)
     taggable_id:      integer
     _indexes:
