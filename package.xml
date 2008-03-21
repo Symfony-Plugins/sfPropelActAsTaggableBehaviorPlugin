@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
  <name>sfPropelActAsTaggableBehaviorPlugin</name>
- <channel>plugins.symfony-plugins.org</channel>
+ <channel>pear.symfony-project.com</channel>
  <summary>Propel taggable behavior</summary>
  <description>This behavior permits to attach tags to Propel objects. It includes tag-clouds generation and helpers to display these clouds.</description>
  <lead>
@@ -10,19 +10,20 @@
   <email>xavier@lacot.org</email>
   <active>yes</active>
  </lead>
- <date>2007-12-11</date>
- <time>10:15:56</time>
+ <date>2008-03-21</date>
+ <time>14:23:24</time>
  <version>
-  <release>0.4.0</release>
-  <api>0.4.0</api>
+  <release>0.5.0</release>
+  <api>0.5.0</api>
  </version>
  <stability>
   <release>beta</release>
   <api>beta</api>
  </stability>
  <license uri="http://www.symfony-project.com/license">MIT license</license>
- <notes>
-  * added machine tags support (also called "triple tags") (thanks to Michael Nolan)
+ <notes>* compatibility with Symfony 1.1
+* added setTags() method
+* renamed table names in order to use the sf_ prefix
  </notes>
  <contents>
   <dir name="/">
@@ -67,8 +68,8 @@
    </pearinstaller>
    <package>
     <name>symfony</name>
-    <channel>plugins.symfony-plugins.org</channel>
-    <min>1.1.0</min>
+    <channel>pear.symfony-project.com</channel>
+    <min>1.0.0</min>
     <max>1.2.0</max>
     <exclude>1.2.0</exclude>
    </package>
@@ -76,6 +77,21 @@
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <version>
+    <release>0.5.0</release>
+    <api>0.5.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2008-03-21</date>
+   <license uri="http://www.symfony-project.com/license">MIT license</license>
+   <notes>* compatibility with Symfony 1.1
+* added setTags() method
+* renamed table names in order to use the sf_ prefix</notes>
+  </release>
   <release>
    <version>
     <release>0.4.0</release>

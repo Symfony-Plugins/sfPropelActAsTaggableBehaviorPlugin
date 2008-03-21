@@ -3,6 +3,8 @@
 == Introduction ==
 This behavior permits to attach tags to Propel objects. It includes tag-clouds generation and helpers to display these clouds.
 
+[[Image(sfPropelActAsTaggableBehaviorPlugin.png)]]
+
 == Features ==
 
  * add/remove tag(s) on an object
@@ -12,14 +14,15 @@ This behavior permits to attach tags to Propel objects. It includes tag-clouds g
  * related tags handling
  * unit-tested
  * [http://www.flickr.com/groups/api/discuss/72157594497877875/ machine tags] support (also called "triple tags")
+ * easy tags fixtures loading
 
 == Philosophy of the stuff ==
 
- * taggable objects must have a primary key
+ * taggable models must have a primary key
  * tags are saved when the object is saved, not before
  * one object cannot be tagged twice with the same tag. When trying to use twice the same tag on one object, the second tagging will be ignored
  * the tags associated to one taggable object are only loaded when necessary. Then they are cached.
- * once created, tags never change in the Tag table. When using replaceTag(), a new tag is created id necessary, but the old one is not deleted.
+ * once created, tags never change in the Tag table. When using replaceTag(), a new tag is created if necessary, but the old one is not deleted.
 
 == Get it installed ==
 
@@ -89,10 +92,12 @@ Since the version 0.4, the plugin supports [http://www.flickr.com/groups/api/dis
 <?php
 $post = new Post();
 $post->addTag('iso:isbn=123456789');
+$post->save();
 
 // assume City is a taggable class
 $city = new City();
 $city->addTag('geo:lat=47.3456');
+$city->save();
 }}}
 
 === Retrieving one object's tags ===
@@ -118,6 +123,31 @@ $post = PostPeer::retrieveByPk(1);
 $post->removeTag('toto');
 $post->removeTag('toto, tutu');
 $post->removeAllTags();
+}}}
+
+=== Setting one object's tags ===
+All the tags of an object can be set or replaced at once, using the methode 
+{{{setTags()}}}:
+{{{
+#!php
+<?php
+$post = PostPeer::retrieveByPk(1);
+$post->setTags('toto, tutu');
+$post->save();
+}}}
+
+This is particularly useful when using [http://www.symfony-project.org/book/1_0/16-Application-Management-Tools#Fixture File Syntax fixtures] 
+in a project, as it permits to attach tags to the objects a pretty straight way:
+
+{{{
+Post: 
+  first_post:
+    title:    My first memories
+    tags:     memories, sleeping, bed
+
+  second_post:
+    title:    Things got worse
+    tags:     death, memories, personnal
 }}}
 
 === Retrieving objects, based on their tags ===
@@ -261,14 +291,16 @@ When required, the saved_tags namespace is filled with the tags previously prese
 
 == API ==
 The behavior implement the following methods:
- * '''addTag($tagname)''' - Adds one or several tags to an object
- * '''getTags()''' - Returns the list of the tags attached to the object
- * '''hasTag($tag = null)''' - Returns true if the object has a tag. If a tag ar an array of tags is passed in second parameter, checks if these tags are attached to the object
+ * '''addTag($tagname)''' - Adds one or several tags to an object.
+ * '''getTags()''' - Returns the list of the tags attached to the object.
+ * '''hasTag($tag = null)''' - Returns true if the object has a tag. If a tag ar an array of tags is passed in second parameter, checks if these tags are attached to the object.
+ * '''removeAllTags()''' - Removes all the tags of the object.
  * '''removeTag($tagname)''' - Removes a tag or a set of tags from the object.
  * '''replaceTag($tagname, $replacement = null)''' - Replaces a tag with an other one.
+ * '''setTags($tagname)''' - Sets teh tags of the object. If previous tags were attached to the object, they are removed.
 
 The behavior class also implement the following method, which is a facility for preloading all the tags for a set of taggable objects
- * '''preloadTags($objects)''' - Preload tags for a set of objects
+ * '''preloadTags($objects)''' - Preload tags for a set of objects.
 
 == Unit testing ==
 The plugin has been deeply unit-tested, if not fully. The tests are located in test/unit/sfPropelActAsTaggableBehaviorTest.php. If you want to run them:
@@ -288,6 +320,11 @@ The plugin has been deeply unit-tested, if not fully. The tests are located in t
 This plugin has been developed by [http://lacot.org/blog Xavier Lacot] and is licensed under the MIT license. Thanks to Tristan Rivoallan for the help provided.
 
 == Changelog ==
+
+=== version 0.5 - 2008-03-21 ===
+ * compatibility with Symfony 1.1
+ * added {{{setTags()}}} method
+ * renamed table names in order to use the sf_ prefix
 
 === version 0.4 - 2007-12-11 ===
  * added machine tags support (also called "triple tags") (thanks to Michael Nolan)
