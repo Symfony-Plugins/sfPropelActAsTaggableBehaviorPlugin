@@ -80,6 +80,7 @@ function tag_list($tags, $route, $options = array())
   {
     $class = isset($options['class']) ? $options['class'] : 'tags-list';
     $result = '<ul class="'.$class.'">';
+    $i = 1;
 
     foreach ($tags as $tag)
     {
@@ -88,10 +89,17 @@ function tag_list($tags, $route, $options = array())
                       array('rel' => 'tag'));
 
       $result .= '
-                  <li>'.$link.'</li>';
+                  <li>'.$link;
+      if (isset($options['separator']) && ($i != count($tags)))
+      {
+        $result .= $options['separator'];
+      }
+      
+      $result .= '</li>';
     }
 
     $result .= '</ul>';
+    $i++;
   }
 
   return $result;
