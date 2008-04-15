@@ -94,12 +94,12 @@ function tag_list($tags, $route, $options = array())
       {
         $result .= $options['separator'];
       }
-      
+
       $result .= '</li>';
+      $i++;
     }
 
     $result .= '</ul>';
-    $i++;
   }
 
   return $result;
