@@ -112,7 +112,7 @@ class sfPropelActAsTaggableBehavior
     return self::getTagsHolder($object)->getAll('saved_tags');
   }
 
-  private static function set_saved_tags(BaseObject $object, $tags)
+  private static function set_saved_tags(BaseObject $object, $tags = array())
   {
     self::clear_saved_tags($object);
     self::getTagsHolder($object)->add($tags, 'saved_tags');
@@ -325,6 +325,9 @@ class sfPropelActAsTaggableBehavior
 
       foreach ($searched as $model => $instances)
       {
+        array_map(array('sfPropelActAsTaggableBehavior', 'set_saved_tags'),
+                  $instances,
+                  array_fill(0, count($instances), array()));
         $keys = array_keys($instances);
         $query = 'SELECT %s as id,
                          GROUP_CONCAT(%s) as tags
