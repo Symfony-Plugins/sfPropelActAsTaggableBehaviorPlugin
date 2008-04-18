@@ -333,7 +333,7 @@ class TagPeer extends BaseTagPeer
    * @param  Criteria  $c      Existing Criteria to hydrate
    * @return Criteria
    */
-  public static function getTaggedWithCriteria($model, $tags = array(), Criteria $c = null)
+  public static function getTaggedWithCriteria($model, $tags = array(), Criteria $c = null, $options = array())
   {
     $tags = sfPropelActAsTaggableToolkit::explodeTagString($tags);
 
@@ -353,7 +353,8 @@ class TagPeer extends BaseTagPeer
                                         $model));
     }
 
-    $taggings = self::getTaggings($tags, array('model' => $model));
+    $options['model'] = $model;
+    $taggings = self::getTaggings($tags, $options);
     $tagging = isset($taggings[$model]) ? $taggings[$model] : array();
     $peer = get_class(call_user_func(array(new $model, 'getPeer')));
     $c->add(constant($peer.'::ID'), $tagging, Criteria::IN);
@@ -443,7 +444,13 @@ class TagPeer extends BaseTagPeer
       $stmt->setString($position++, $options['model']);
     }
 
-    $stmt->setString($position, count($tags));
+    if (!isset($options['nb_common_tags'])
+        || ($options['nb_common_tags'] > count($tags)))
+    {
+      $options['nb_common_tags'] = count($tags);
+    }
+
+    $stmt->setString($position, $options['nb_common_tags']);
     $rs = $stmt->executeQuery(ResultSet::FETCHMODE_NUM);
     $taggings = array();
 

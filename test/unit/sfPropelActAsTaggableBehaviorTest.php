@@ -39,7 +39,7 @@ $browser = new sfTestBrowser();
 $browser->initialize();
 
 // start tests
-$t = new lime_test(54, new lime_output_color());
+$t = new lime_test(55, new lime_output_color());
 
 
 // these tests check for the tags attachement consistency
@@ -284,6 +284,10 @@ $t->ok(count($tagged_with_tag7) == 5, 'getTaggedWith() can return several object
 
 $tagged_with_tag17 = TagPeer::getTaggedWith(array('tag1', 'tag7'));
 $t->ok(count($tagged_with_tag17) == 3, 'getTaggedWith() returns objects tagged with several specific tags.');
+
+$tagged_with_tag127 = TagPeer::getTaggedWith('tag1, tag2, tag7',
+                                             array('nb_common_tags' => 2));
+$t->ok(count($tagged_with_tag127) == 6, 'the "nb_common_tags" option of getTaggedWith() returns objects tagged with a certain number of tags within a set of specific tags.');
 
 // these tests check the isTaggable() method
 $t->diag('detecting if a model is taggable or not');

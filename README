@@ -162,7 +162,7 @@ These methods are all located in the {{{TagPeer}}} class:
 $tutu_toto_models = TagPeer::getModelsTaggedWith('tutu, toto');
 
 // gets objects tagged with one or several specific tags
-$tutu_toto_objects = TagPeer::getTaggedWith('tutu, toto');true
+$tutu_toto_objects = TagPeer::getTaggedWith('tutu, toto');
 $tutu_toto_objects = TagPeer::getTaggedWith('tutu, toto', array('triple' => true, 'namespace' => 'geo'));
 $tutu_toto_objects = TagPeer::getTaggedWith('tutu, toto', array('model' => 'Post'));
 
@@ -171,6 +171,12 @@ $tutu_toto_objects = TagPeer::getTaggedWith('tutu, toto', array('model' => 'Post
 $criteria = TagPeer::getTaggedWithCriteria('Post', 'tutu, toto', array('model' => 'Post'));
 $criteria->add(PostPeer::PUBLISHED, true);
 $posts = PostPeer::doSelect($c);
+
+// gets objects that are tagged with a certain number of tags within a set of 
+// tags. For instance, the following line returns all teh object tagged with at 
+// least two of the following tags: toto, tutu, tata, titi
+$objects = TagPeer::getTaggedWith('tutu, toto, tata, titi', 
+                                  array('nb_common_tags' => 2));
 }}}
 
 === Tags cloud generation ===
