@@ -168,7 +168,7 @@ $tutu_toto_objects = TagPeer::getTaggedWith('tutu, toto', array('model' => 'Post
 
 // gets a criteria that permits to select objects tagged with one or several 
 // specific tags
-$criteria = TagPeer::getTaggedWithCriteria('Post', 'tutu, toto', array('model' => 'Post'));
+$criteria = TagPeer::getTaggedWithCriteria('Post', 'tutu, toto');
 $criteria->add(PostPeer::PUBLISHED, true);
 $posts = PostPeer::doSelect($c);
 
