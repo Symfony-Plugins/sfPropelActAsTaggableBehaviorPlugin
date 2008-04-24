@@ -196,20 +196,28 @@ class sfPropelActAsTaggableBehavior
   {
     if (!isset($object->_tags) || !$object->_tags->hasNamespace('saved_tags'))
     {
-      $c = new Criteria();
-      $c->add(TaggingPeer::TAGGABLE_ID, $object->getPrimaryKey());
-      $c->add(TaggingPeer::TAGGABLE_MODEL, get_class($object));
-      $c->addJoin(TaggingPeer::TAG_ID, TagPeer::ID);
-      $saved_tags = TagPeer::doSelect($c);
-      $tags = array();
-
-      foreach ($saved_tags as $tag)
+      if (true === $object->isNew())
       {
-        $tags[$tag->getName()] = $tag->getName();
+        self::set_saved_tags($object, array());
+        return array();
       }
+      else
+      {
+        $c = new Criteria();
+        $c->add(TaggingPeer::TAGGABLE_ID, $object->getPrimaryKey());
+        $c->add(TaggingPeer::TAGGABLE_MODEL, get_class($object));
+        $c->addJoin(TaggingPeer::TAG_ID, TagPeer::ID);
+        $saved_tags = TagPeer::doSelect($c);
+        $tags = array();
 
-      self::set_saved_tags($object, $tags);
-      return $tags;
+        foreach ($saved_tags as $tag)
+        {
+          $tags[$tag->getName()] = $tag->getName();
+        }
+
+        self::set_saved_tags($object, $tags);
+        return $tags;
+      }
     }
     else
     {
@@ -226,11 +234,57 @@ class sfPropelActAsTaggableBehavior
   public function getTags(BaseObject $object, $options = array())
   {
     $tags = array_merge(self::get_tags($object), $this->getSavedTags($object));
-    ksort($tags);
 
-    if (isset($options['serialized']) && (true === $options['serialized']))
+    if (isset($options['is_triple']) && (true === $options['is_triple']))
     {
-      $tags = implode(', ', $tags);
+      $tags = array_map(array('sfPropelActAsTaggableToolkit', 'extractTriple'), $tags);
+      $pattern = array('tag', 'namespace', 'key', 'value');
+
+      foreach ($pattern as $key => $value)
+      {
+        if (isset($options[$value]))
+        {
+          $tags_array = array();
+
+          foreach ($tags as $tag)
+          {
+            if ($tag[$key] == $options[$value])
+            {
+              $tags_array[] = $tag;
+            }
+          }
+
+          $tags = $tags_array;
+        }
+      }
+
+      $return = (isset($options['return']) && in_array($options['return'], $pattern)) ? $options['return'] : 'all';
+
+      if ('all' != $return)
+      {
+        $keys = array_flip($pattern);
+        $tags_array = array();
+
+        foreach ($tags as $tag)
+        {
+          if (null != $tag[$keys[$return]])
+          {
+            $tags_array[] = $tag[$keys[$return]];
+          }
+        }
+
+        $tags = array_unique($tags_array);
+      }
+    }
+
+    if (!isset($return) || ('all' != $return))
+    {
+      ksort($tags);
+
+      if (isset($options['serialized']) && (true === $options['serialized']))
+      {
+        $tags = implode(', ', $tags);
+      }
     }
 
     return $tags;

@@ -114,6 +114,33 @@ foreach ($tags as $tag)
 }
 }}}
 
+If you want to retrieve only the triple tags of a certain namespace, you can 
+pass some options to the {{{getTags()}}} method:
+{{{
+#!php
+<?php
+$post = PostPeer::retrieveByPk(1);
+$tags = $post->getTags(array('is_triple' => true, 
+                             'namespace' => 'geo', 
+                             'return'    => 'value'));
+
+foreach ($tags as $tag)
+{
+  echo $tag.'<br />';
+}
+}}}
+
+The getTags() method may accept up to 5 parameters:
+ * {{{is_triple}}}: whether or not the returned tags should be triple tags only
+ * in case this option has been defined, the other options are available:
+   * {{{namespace}}}: namespace of the returned triple tags
+   * {{{key}}}: key of the returned triple tags
+   * {{{value}}}: value of the returned triple tags
+   * {{{tag}}}: complete triple-tag string of the returned triple tags
+   * {{{return}}}: format of the returned result:
+     * By default, selecting triple tags will return an array of tags, in which each tag is represented by an array of the form [complete tag string, namespace, key, value].
+     * If the {{{return}}} option has the value {{{namespace}}}, {{{key}}} or {{{value}}}, the {{{getTags()}}} method will only return the namespaces, keys or values list.
+
 === Removing one object's tags ===
 Of course, tags can also be removed:
 {{{
@@ -326,6 +353,10 @@ The plugin has been deeply unit-tested, if not fully. The tests are located in t
 This plugin has been developed by [http://lacot.org/blog Xavier Lacot] and is licensed under the MIT license. Thanks to Tristan Rivoallan for the help provided.
 
 == Changelog ==
+
+=== trunk ===
+ * added "nb_common_tags" option, that permits to select objects having a certain number of tags within a given tags list
+ * added the possibility to retrieve the triple tags of an object that meet certain constraints (namespace, etc.)
 
 === version 0.5 - 2008-03-21 ===
  * compatibility with Symfony 1.1

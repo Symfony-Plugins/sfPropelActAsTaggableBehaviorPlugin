@@ -39,7 +39,7 @@ $browser = new sfTestBrowser();
 $browser->initialize();
 
 // start tests
-$t = new lime_test(55, new lime_output_color());
+$t = new lime_test(59, new lime_output_color());
 
 
 // these tests check for the tags attachement consistency
@@ -332,6 +332,51 @@ $t->ok($tag->getIsTriple(), 'a triple tag created from a string is identified as
 $tag = TagPeer::retrieveOrCreateByTagname('tutu');
 $t->ok(!$tag->getIsTriple(), 'a non tripled tag created from a string is not identified as a triple.');
 
+
+// these tests check the retrieval of the tags of one object, based on
+// triple-tags constraints
+
+$t->diag('retrieving triple tags, and extracting only parts of it');
+
+$object = _create_object();
+$object->addTag('geo:lat=50.7');
+$object->addTag('geo:long=6.1');
+$object->addTag('de:city=Aachen');
+$object->addTag('fr:city=Aix la Chapelle');
+$object->addTag('en:city=Aix Chapel');
+$object->save();
+
+// get all the informations in the "geo" namespace
+$tags = $object->getTags(array('is_triple' => true,
+                               'namespace' => 'geo',
+                               'return'    => 'value'));
+$t->ok(count($tags) == 2, 'The getTags() method permits to select triple tags in one specific namespace.');
+
+// get all the values of the triple tags for which the key is "city", whatever
+// the namespace
+$tags = $object->getTags(array('is_triple' => true,
+                               'key'       => 'city',
+                               'return'    => 'value'));
+$t->ok(count($tags) == 3, 'The getTags() method permits to select triple tags for one specific key.');
+
+$object2 = _create_object();
+$object2->addTag('geo:lat=48.8');
+$object2->addTag('geo:long=2.4');
+$object2->addTag('de:city=Paris');
+$object2->addTag('fr:city=Paris');
+$object2->addTag('en:city=Paris');
+$object2->save();
+
+// get all the values of the triple tags for which the key is "city", whatever
+// the namespace
+$tags = $object2->getTags(array('is_triple' => true,
+                                'key'       => 'city',
+                                'return'    => 'value'));
+$t->ok(count($tags) == 1, 'When selecting only the values of triple tags of one object, there is no duplicate.');
+
+$ns = $object2->getTags(array('is_triple' => true,
+                              'return'    => 'namespace'));
+$t->ok(count($ns) == 4, 'The method getTags() permit to select only the names of the namespaces of the tags attached to one object.');
 
 // these tests check for TagPeer triple tags specific methods (tag clouds generation)
 
