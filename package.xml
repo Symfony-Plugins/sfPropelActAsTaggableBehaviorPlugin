@@ -10,20 +10,21 @@
   <email>xavier@lacot.org</email>
   <active>yes</active>
  </lead>
- <date>2008-03-21</date>
- <time>14:23:24</time>
+ <date>2008-05-10</date>
+ <time>03:55:12</time>
  <version>
-  <release>0.5.0</release>
-  <api>0.5.0</api>
+  <release>0.6.0</release>
+  <api>0.6.0</api>
  </version>
  <stability>
   <release>beta</release>
   <api>beta</api>
  </stability>
  <license uri="http://www.symfony-project.com/license">MIT license</license>
- <notes>* compatibility with Symfony 1.1
-* added setTags() method
-* renamed table names in order to use the sf_ prefix
+ <notes>* added "nb_common_tags" option, that permits to select objects having a certain number of tags within a given tags list
+ * added the possibility to retrieve the triple tags of an object that meet certain constraints (namespace, etc.)
+ * added "separator" option in the tag_list() helper
+ * improved preloadTags() performance, in case all the objects don't have a tag
  </notes>
  <contents>
   <dir name="/">
@@ -77,6 +78,22 @@
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <version>
+    <release>0.6.0</release>
+    <api>0.6.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2008-05-10</date>
+   <license uri="http://www.symfony-project.com/license">MIT license</license>
+   <notes>* added "nb_common_tags" option, that permits to select objects having a certain number of tags within a given tags list
+ * added the possibility to retrieve the triple tags of an object that meet certain constraints (namespace, etc.)
+ * added "separator" option in the tag_list() helper
+ * improved preloadTags() performance, in case all the objects don't have a tag</notes>
+  </release>
   <release>
    <version>
     <release>0.5.0</release>

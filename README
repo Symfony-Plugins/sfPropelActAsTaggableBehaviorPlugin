@@ -200,7 +200,7 @@ $criteria->add(PostPeer::PUBLISHED, true);
 $posts = PostPeer::doSelect($c);
 
 // gets objects that are tagged with a certain number of tags within a set of 
-// tags. For instance, the following line returns all teh object tagged with at 
+// tags. For instance, the following line returns all the object tagged with at 
 // least two of the following tags: toto, tutu, tata, titi
 $objects = TagPeer::getTaggedWith('tutu, toto, tata, titi', 
                                   array('nb_common_tags' => 2));
@@ -338,25 +338,27 @@ The behavior class also implement the following method, which is a facility for 
 == Unit testing ==
 The plugin has been deeply unit-tested, if not fully. The tests are located in test/unit/sfPropelActAsTaggableBehaviorTest.php. If you want to run them:
  * install the plugin
- * configure a model for using it, for instance "Post"
- * copy the test file to /path/to/your/project/test/unit/sfPropelActAsTaggableBehaviorTest.php
- * edit this file and modify line 3:
+ * configure two model for using it, for instance "Post" and "Link"
+ * edit the test file test/unit/sfPropelActAsTaggableBehaviorTest.php and modify line 3 and 4:
    {{{
      define('TEST_CLASS', 'Post');
+     define('TEST_CLASS', 'Link');
    }}}
  * run the tests:
    {{{
-     ./symfony test-unit sfPropelActAsTaggableBehavior
+     $ php ./plugins/sfPropelActAsTaggableBehaviorPlugin/test/unit/sfPropelActAsTaggableBehaviorTest.php
    }}}
 
 == License and credits ==
-This plugin has been developed by [http://lacot.org/blog Xavier Lacot] and is licensed under the MIT license. Thanks to Tristan Rivoallan for the help provided.
+This plugin has been developed by [http://lacot.org/ Xavier Lacot] and is licensed under the MIT license.
 
 == Changelog ==
 
-=== trunk ===
+=== version 0.6 - 2008-05-10 ===
  * added "nb_common_tags" option, that permits to select objects having a certain number of tags within a given tags list
  * added the possibility to retrieve the triple tags of an object that meet certain constraints (namespace, etc.)
+ * added "separator" option in the tag_list() helper
+ * improved preloadTags() performance, in case all the objects don't have a tag
 
 === version 0.5 - 2008-03-21 ===
  * compatibility with Symfony 1.1
@@ -375,4 +377,4 @@ This plugin has been developed by [http://lacot.org/blog Xavier Lacot] and is li
  * thanks to Nicolas Perriault for his useful comments
 
 === version 0.1 - 2007-05-22 ===
-Initial public release. Features tags attachment to heterogene Propel objects, and includes tag-clouds generation.
+Initial public release. Features tags attachment to heterogene Propel objects, and includes tag-clouds generation. Thanks to Tristan Rivoallan for the help provided.
