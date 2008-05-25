@@ -170,7 +170,8 @@ class TagPeer extends BaseTagPeer
     $c->addSelectColumn(TaggingPeer::TAGGABLE_MODEL);
     $c->addSelectColumn(TaggingPeer::TAGGABLE_ID);
 
-    $sql = BasePeer::createSelectSql($c, array());
+    $params = array();
+    $sql = BasePeer::createSelectSql($c, $params);
     $con = Propel::getConnection();
     $stmt = $con->prepareStatement($sql);
     $position = 1;
