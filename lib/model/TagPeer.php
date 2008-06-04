@@ -384,10 +384,15 @@ class TagPeer extends BaseTagPeer
 
     $c = new Criteria();
     $c->addJoin(TagPeer::ID, TaggingPeer::TAG_ID);
-    $c->add(TagPeer::NAME, $tags, Criteria::IN);
+
+    if (count($tags) > 0)
+    {
+      $c->add(TagPeer::NAME, $tags, Criteria::IN);
+      $having = $c->getNewCriterion(TagPeer::COUNT, count($tags), Criteria::GREATER_EQUAL);
+      $c->addHaving($having);
+    }
+
     $c->addGroupByColumn(TaggingPeer::TAGGABLE_ID);
-    $having = $c->getNewCriterion(TagPeer::COUNT, count($tags), Criteria::GREATER_EQUAL);
-    $c->addHaving($having);
     $c->clearSelectColumns();
     $c->addSelectColumn(TaggingPeer::TAGGABLE_MODEL);
     $c->addSelectColumn(TaggingPeer::TAGGABLE_ID);
@@ -442,7 +447,32 @@ class TagPeer extends BaseTagPeer
 
     if (isset($options['model']))
     {
-      $stmt->setString($position++, $options['model']);
+      $stmt->setString($position, $options['model']);
+      $position++;
+    }
+
+    if (isset($options['triple']))
+    {
+      $stmt->setBoolean($position, $options['triple']);
+      $position++;
+    }
+
+    if (isset($options['namespace']))
+    {
+      $stmt->setString($position, $options['namespace']);
+      $position++;
+    }
+
+    if (isset($options['key']))
+    {
+      $stmt->setString($position, $options['key']);
+      $position++;
+    }
+
+    if (isset($options['value']))
+    {
+      $stmt->setString($position, $options['value']);
+      $position++;
     }
 
     if (!isset($options['nb_common_tags'])

@@ -114,14 +114,14 @@ foreach ($tags as $tag)
 }
 }}}
 
-If you want to retrieve only the triple tags of a certain namespace, you can 
+If you want to retrieve only the triple tags of a certain namespace, you can
 pass some options to the {{{getTags()}}} method:
 {{{
 #!php
 <?php
 $post = PostPeer::retrieveByPk(1);
-$tags = $post->getTags(array('is_triple' => true, 
-                             'namespace' => 'geo', 
+$tags = $post->getTags(array('is_triple' => true,
+                             'namespace' => 'geo',
                              'return'    => 'value'));
 
 foreach ($tags as $tag)
@@ -153,7 +153,7 @@ $post->removeAllTags();
 }}}
 
 === Setting one object's tags ===
-All the tags of an object can be set or replaced at once, using the methode 
+All the tags of an object can be set or replaced at once, using the methode
 {{{setTags()}}}:
 {{{
 #!php
@@ -163,11 +163,11 @@ $post->setTags('toto, tutu');
 $post->save();
 }}}
 
-This is particularly useful when using [http://www.symfony-project.org/book/1_0/16-Application-Management-Tools#Fixture File Syntax fixtures] 
+This is particularly useful when using [http://www.symfony-project.org/book/1_0/16-Application-Management-Tools#Fixture File Syntax fixtures]
 in a project, as it permits to attach tags to the objects a pretty straight way:
 
 {{{
-Post: 
+Post:
   first_post:
     title:    My first memories
     tags:     memories, sleeping, bed
@@ -178,13 +178,13 @@ Post:
 }}}
 
 === Retrieving objects, based on their tags ===
-The plugin proposes several methods for retrieving objects given their tags. 
+The plugin proposes several methods for retrieving objects given their tags.
 These methods are all located in the {{{TagPeer}}} class:
 
 {{{
 #!php
 <?php
-// gets the list of the models that have at least one instance tagged with one 
+// gets the list of the models that have at least one instance tagged with one
 // or several specific tags
 $tutu_toto_models = TagPeer::getModelsTaggedWith('tutu, toto');
 
@@ -193,16 +193,22 @@ $tutu_toto_objects = TagPeer::getTaggedWith('tutu, toto');
 $tutu_toto_objects = TagPeer::getTaggedWith('tutu, toto', array('triple' => true, 'namespace' => 'geo'));
 $tutu_toto_objects = TagPeer::getTaggedWith('tutu, toto', array('model' => 'Post'));
 
-// gets a criteria that permits to select objects tagged with one or several 
+// it is als possible to select objects tagged with certain types of triple tags
+// in this special case, the first "tags" parameter is useless. For instance,
+// this line will return all the objects that have a triple tag in the namespace
+// "geo":
+$tutu_toto_objects = TagPeer::getTaggedWith(array(), array('namespace' => 'geo'));
+
+// gets a criteria that permits to select objects tagged with one or several
 // specific tags
 $criteria = TagPeer::getTaggedWithCriteria('Post', 'tutu, toto');
 $criteria->add(PostPeer::PUBLISHED, true);
 $posts = PostPeer::doSelect($c);
 
-// gets objects that are tagged with a certain number of tags within a set of 
-// tags. For instance, the following line returns all the object tagged with at 
+// gets objects that are tagged with a certain number of tags within a set of
+// tags. For instance, the following line returns all the object tagged with at
 // least two of the following tags: toto, tutu, tata, titi
-$objects = TagPeer::getTaggedWith('tutu, toto, tata, titi', 
+$objects = TagPeer::getTaggedWith('tutu, toto, tata, titi',
                                   array('nb_common_tags' => 2));
 }}}
 
@@ -214,7 +220,7 @@ The plugin also proposes methods and helpers for generating tags cloud:
 // gets the popular tags
 $tags = TagPeer::getPopulars();
 
-// display the tags cloud. The tags will use the route name "@tag" which tags 
+// display the tags cloud. The tags will use the route name "@tag" which tags
 // the request parameter "tags"
 echo tag_cloud($tags, '@tag?tags=');
 }}}
@@ -233,14 +239,14 @@ When you click on a tag in a tag cloud, you will want to get a list of objects t
 // get the tags related to "toto" and "tutu", for the model "Post" only
 $tags = TagPeer::getRelatedTags('toto,tutu', array('model' => 'Post'));
 
-// displays the related tags cloud, using the route "@post_tags" with the 
+// displays the related tags cloud, using the route "@post_tags" with the
 // request parameter "tags"
 echo related_tag_cloud($tags, '@post_tags?tags=', 'toto,tutu');
 }}}
 
 === Specialize your tag clouds ===
-The tag retrieval mecanism is fully based on Criterias, so it is easy to pass 
-several restrictions. For instance, for retrieving popular tags over posts 
+The tag retrieval mecanism is fully based on Criterias, so it is easy to pass
+several restrictions. For instance, for retrieving popular tags over posts
 created in March 2007:
 {{{
 #!php
@@ -252,7 +258,7 @@ $tags = TagPeer::getPopulars($c, array('model' => 'Post'));
 echo tag_cloud($tags, '@tag?tags=');
 }}}
 
-The methods TagPeer::getPopulars, TagPeer::getAll, etc., accept as last 
+The methods TagPeer::getPopulars, TagPeer::getAll, etc., accept as last
 parameter an array with several keys:
  * max number of returned tags:
 {{{
@@ -342,7 +348,7 @@ The plugin has been deeply unit-tested, if not fully. The tests are located in t
  * edit the test file test/unit/sfPropelActAsTaggableBehaviorTest.php and modify line 3 and 4:
    {{{
      define('TEST_CLASS', 'Post');
-     define('TEST_CLASS', 'Link');
+     define('TEST_CLASS_2', 'Link');
    }}}
  * run the tests:
    {{{

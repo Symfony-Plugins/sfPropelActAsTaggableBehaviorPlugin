@@ -39,7 +39,7 @@ $browser = new sfTestBrowser();
 $browser->initialize();
 
 // start tests
-$t = new lime_test(59, new lime_output_color());
+$t = new lime_test(62, new lime_output_color());
 
 
 // these tests check for the tags attachement consistency
@@ -346,6 +346,15 @@ $object->addTag('fr:city=Aix la Chapelle');
 $object->addTag('en:city=Aix Chapel');
 $object->save();
 
+// get all the tags
+$tags = $object->getTags();
+$t->ok(count($tags) == 5, 'The addTags() method permits to create triple tags, that can be retrieved using getTags().');
+
+$id = $object->getPrimaryKey();
+$object = call_user_func(array(_create_object()->getPeer(), 'retrieveByPk'), $id);
+$tags = $object->getTags();
+$t->ok(count($tags) == 5, 'The addTags() method permits to create triple tags, that can be retrieved using getTags(), even when saved.');
+
 // get all the informations in the "geo" namespace
 $tags = $object->getTags(array('is_triple' => true,
                                'namespace' => 'geo',
@@ -438,6 +447,8 @@ foreach ($tags_triple as $tag)
 
 $t->ok($result === array('ns:key=tutu'), 'it is possible to search for triple tags by value.');
 
+$objects_triple = TagPeer::getTaggedWith(array(), array('namespace' => 'ns', 'model' => 'Post'));
+$t->ok(count($objects_triple) == 1, 'it is possible to retrieve objects tagged with certain triple tags.');
 
 
 // test object creation
