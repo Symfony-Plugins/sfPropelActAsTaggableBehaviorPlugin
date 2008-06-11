@@ -222,7 +222,7 @@ $tags = TagPeer::getPopulars();
 
 // display the tags cloud. The tags will use the route name "@tag" which tags
 // the request parameter "tags"
-echo tag_cloud($tags, '@tag?tags=');
+echo tag_cloud($tags, '@tag?tags=%s');
 }}}
 
 The default size of the tag cloud is 100 items, but this value might be tweaked in app.yml:
@@ -255,7 +255,7 @@ $c = new Criteria();
 $c->addJoin(PostPeer::ID, TaggingPeer::TAGGABLE_ID);
 $c->add(PostPeer::CREATED_AT, '2007-03%', Criteria::LIKE);
 $tags = TagPeer::getPopulars($c, array('model' => 'Post'));
-echo tag_cloud($tags, '@tag?tags=');
+echo tag_cloud($tags, '@tag?tags=%s');
 }}}
 
 The methods TagPeer::getPopulars, TagPeer::getAll, etc., accept as last
