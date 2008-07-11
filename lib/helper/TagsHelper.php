@@ -79,7 +79,16 @@ function tag_list($tags, $route, $options = array())
   if (count($tags) > 0)
   {
     $class = isset($options['class']) ? $options['class'] : 'tags-list';
-    $result = '<ul class="'.$class.'">';
+
+    if (isset($options['ordered']))
+    {
+      $result = '<ol class="'.$class.'">';
+    }
+    else
+    {
+      $result = '<ul class="'.$class.'">';
+    }
+
     $i = 1;
 
     foreach ($tags as $tag)
@@ -99,7 +108,14 @@ function tag_list($tags, $route, $options = array())
       $i++;
     }
 
-    $result .= '</ul>';
+    if (isset($options['ordered']))
+    {
+      $result .= '</ol>';
+    }
+    else
+    {
+      $result .= '</ul>';
+    }
   }
 
   return $result;
