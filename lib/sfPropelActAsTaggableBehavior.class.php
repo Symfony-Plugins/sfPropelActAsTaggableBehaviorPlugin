@@ -351,6 +351,62 @@ class sfPropelActAsTaggableBehavior
   }
 
   /**
+   * Tags saving logic, runned after the object himself has been saved
+   *
+   * @param      BaseObject  $object
+   */
+  public function postSave(BaseObject $object)
+  {
+    $tags = self::get_tags($object);
+    $removed_tags = self::get_removed_tags($object);
+
+    // save new tags
+    foreach ($tags as $tagname)
+    {
+      $tag = TagPeer::retrieveOrCreateByTagName($tagname);
+      $tag->save();
+      $tagging = new Tagging();
+      $tagging->setTagId($tag->getId());
+      $tagging->setTaggableId($object->getPrimaryKey());
+      $tagging->setTaggableModel(get_class($object));
+      $tagging->save();
+    }
+
+    // remove removed tags
+    $c = new Criteria();
+    $c->add(TagPeer::NAME, $removed_tags, Criteria::IN);
+    $rs = TagPeer::doSelectRS($c);
+    $removed_tag_ids = array();
+
+    while ($rs->next())
+    {
+      $removed_tag_ids[] = $rs->getInt(1);
+    }
+
+    $c = new Criteria();
+    $c->add(TaggingPeer::TAG_ID, $removed_tag_ids, Criteria::IN);
+    $c->add(TaggingPeer::TAGGABLE_ID, $object->getPrimaryKey());
+    $c->add(TaggingPeer::TAGGABLE_MODEL, get_class($object));
+    TaggingPeer::doDelete($c);
+
+    $tags = array_merge(self::get_tags($object), $this->getSavedTags($object));
+    self::set_saved_tags($object, $tags);
+    self::clear_tags($object);
+    self::clear_removed_tags($object);
+  }
+
+  /**
+   * Taggings removing logic, runned before the object himself has been deleted
+   *
+   * @param      BaseObject  $object
+   */
+  public function preDelete(BaseObject $object)
+  {
+    $object->removeAllTags();
+    $object->save();
+  }
+
+  /**
    * Preload tags for a set of objects. It might be usefull in case you want to
    * display a long list of taggable objects with their associated tags: it
    * avoids to load tags per object, and gets all tags in a few requests.
@@ -421,51 +477,6 @@ class sfPropelActAsTaggableBehavior
         }
       }
     }
-  }
-
-  /**
-   * Tags saving logic, runned after the object himself has been saved
-   *
-   * @param      BaseObject  $object
-   */
-  public function postSave(BaseObject $object)
-  {
-    $tags = self::get_tags($object);
-    $removed_tags = self::get_removed_tags($object);
-
-    // save new tags
-    foreach ($tags as $tagname)
-    {
-      $tag = TagPeer::retrieveOrCreateByTagName($tagname);
-      $tag->save();
-      $tagging = new Tagging();
-      $tagging->setTagId($tag->getId());
-      $tagging->setTaggableId($object->getPrimaryKey());
-      $tagging->setTaggableModel(get_class($object));
-      $tagging->save();
-    }
-
-    // remove removed tags
-    $c = new Criteria();
-    $c->add(TagPeer::NAME, $removed_tags, Criteria::IN);
-    $rs = TagPeer::doSelectRS($c);
-    $removed_tag_ids = array();
-
-    while ($rs->next())
-    {
-      $removed_tag_ids[] = $rs->getInt(1);
-    }
-
-    $c = new Criteria();
-    $c->add(TaggingPeer::TAG_ID, $removed_tag_ids, Criteria::IN);
-    $c->add(TaggingPeer::TAGGABLE_ID, $object->getPrimaryKey());
-    $c->add(TaggingPeer::TAGGABLE_MODEL, get_class($object));
-    TaggingPeer::doDelete($c);
-
-    $tags = array_merge(self::get_tags($object), $this->getSavedTags($object));
-    self::set_saved_tags($object, $tags);
-    self::clear_tags($object);
-    self::clear_removed_tags($object);
   }
 
   /**

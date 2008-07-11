@@ -39,7 +39,7 @@ $browser = new sfTestBrowser();
 $browser->initialize();
 
 // start tests
-$t = new lime_test(62, new lime_output_color());
+$t = new lime_test(63, new lime_output_color());
 
 
 // these tests check for the tags attachement consistency
@@ -195,6 +195,28 @@ $object_tags = $object->getTags();
 $t->ok((count($object_tags) == 2) && $object->hasTag('wallace') && $object->hasTag('gromit'), 'tags can be set directly using setTags().');
 
 unset($object);
+
+
+// these tests check for the tagging removal on object deletion
+
+// clean the database
+TagPeer::doDeleteAll();
+TaggingPeer::doDeleteAll();
+call_user_func(array(_create_object()->getPeer(), 'doDeleteAll'));
+
+$t->diag('taggings removal on objects deletion');
+$object1 = _create_object();
+$object1->addTag('tag2,tag3,tag1,tag4,tag5,tag6');
+$object1->save();
+
+$object2 = _create_object();
+$object2->addTag('tag4,tag7,tag8');
+$object2->save();
+
+$object2->delete();
+
+$tags = TagPeer::getAllWithCount();
+$t->ok(isset($tags['tag4']) && !isset($tags['tag7']), 'the taggings associated to one object are deleted when this object is deleted.');
 
 
 // these tests check for TagPeer methods (tag clouds generation)

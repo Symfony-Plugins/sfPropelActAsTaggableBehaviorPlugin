@@ -9,7 +9,8 @@
  */
 
 sfPropelBehavior::registerHooks('sfPropelActAsTaggableBehavior', array (
- ':save:post' => array ('sfPropelActAsTaggableBehavior', 'postSave'),
+  ':save:post' => array ('sfPropelActAsTaggableBehavior', 'postSave'),
+  ':delete:pre' => array ('sfPropelActAsTaggableBehavior', 'preDelete'),
 ));
 
 
