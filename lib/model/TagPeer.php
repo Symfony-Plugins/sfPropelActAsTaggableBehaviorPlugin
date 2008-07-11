@@ -134,7 +134,11 @@ class TagPeer extends BaseTagPeer
       $tags[$rs->getString(1)] = $rs->getInt(2);
     }
 
-    ksort($tags);
+    if (!isset($options['sort_by_popularity']) || (true !== $options['sort_by_popularity']))
+    {
+      ksort($tags);
+    }
+
     return $tags;
   }
 
