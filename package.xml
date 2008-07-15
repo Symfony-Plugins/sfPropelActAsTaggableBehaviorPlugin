@@ -10,21 +10,21 @@
   <email>xavier@lacot.org</email>
   <active>yes</active>
  </lead>
- <date>2008-05-10</date>
- <time>03:55:12</time>
+ <date>2008-07-16</date>
+ <time>00:05:22</time>
  <version>
-  <release>0.6.0</release>
-  <api>0.6.0</api>
+  <release>0.7.0</release>
+  <api>0.7.0</api>
  </version>
  <stability>
   <release>beta</release>
   <api>beta</api>
  </stability>
  <license uri="http://www.symfony-project.com/license">MIT license</license>
- <notes>* added "nb_common_tags" option, that permits to select objects having a certain number of tags within a given tags list
- * added the possibility to retrieve the triple tags of an object that meet certain constraints (namespace, etc.)
- * added "separator" option in the tag_list() helper
- * improved preloadTags() performance, in case all the objects don't have a tag
+ <notes>* added the "ordered" option to the {{{tag_list()}}} helper
+ * allowed triple tags to be unique for a given object, namespace and key, using a plugin's setting
+ * fixed bug in tags removal. Whan calling {{{removeAllTags()}}} or {{{setTags()}}} twice before saving an object, the tags were not removed. A big thank to Tom Boutell
+ * BC break: the definition of the maximal number of tags to be retrieved with {{{TagPeer::getPopulars()}}} is now defined with {{{app_sfPropelActAsTaggableBehaviorPlugin_limit}}} (previously with {{{app_tags_limit}}})
  </notes>
  <contents>
   <dir name="/">
@@ -33,6 +33,12 @@
     <file name="schema.yml" role="data" />
    </dir>
    <dir name="lib">
+    <dir name="form">
+     <dir name="base" />
+     <!-- form classes -->
+     <file name="TagForm.class.php" role="data" />
+     <file name="TaggingForm.class.php" role="data" />
+    </dir>
     <dir name="helper">
      <!-- helpers -->
      <file name="TagsHelper.php" role="data" />
@@ -78,6 +84,22 @@
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <version>
+    <release>0.7.0</release>
+    <api>0.7.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2008-07-16</date>
+   <license uri="http://www.symfony-project.com/license">MIT license</license>
+   <notes>* added the "ordered" option to the {{{tag_list()}}} helper
+ * allowed triple tags to be unique for a given object, namespace and key, using a plugin's setting
+ * fixed bug in tags removal. Whan calling {{{removeAllTags()}}} or {{{setTags()}}} twice before saving an object, the tags were not removed. A big thank to Tom Boutell
+ * BC break: the definition of the maximal number of tags to be retrieved with {{{TagPeer::getPopulars()}}} is now defined with {{{app_sfPropelActAsTaggableBehaviorPlugin_limit}}} (previously with {{{app_tags_limit}}})</notes>
+  </release>
   <release>
    <version>
     <release>0.6.0</release>

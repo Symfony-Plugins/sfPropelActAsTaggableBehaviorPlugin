@@ -396,7 +396,7 @@ This plugin has been developed by [http://lacot.org/ Xavier Lacot] and is licens
 
 == Changelog ==
 
-=== trunk ===
+=== version 0.7 - 2008-07-15 ===
  * added the "ordered" option to the {{{tag_list()}}} helper
  * allowed triple tags to be unique for a given object, namespace and key, using a plugin's setting
  * fixed bug in tags removal. Whan calling {{{removeAllTags()}}} or {{{setTags()}}} twice before saving an object, the tags were not removed. A big thank to Tom Boutell
