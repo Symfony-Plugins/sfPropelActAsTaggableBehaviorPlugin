@@ -220,7 +220,7 @@ class TagPeer extends BaseTagPeer
 
     if (!$c->getLimit())
     {
-      $c->setLimit(sfConfig::get('app_tags_limit', 100));
+      $c->setLimit(sfConfig::get('app_sfPropelActAsTaggableBehaviorPlugin_limit', 100));
     }
 
     $all_tags = TagPeer::getAllWithCount($c, $options);

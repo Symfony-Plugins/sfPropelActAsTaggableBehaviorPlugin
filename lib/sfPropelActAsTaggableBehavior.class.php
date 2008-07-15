@@ -23,7 +23,7 @@
  *   Then they are cached.
  *
  * - once created, tags never change in the Tag table. When using replaceTag(),
- *   a new tag is created id necessary, but the old one is not deleted.
+ *   a new tag is created if necessary, but the old one is not deleted.
  *
  *
  * The plugin associates a parameterHolder to Propel objects, with 3 namespaces:
@@ -177,6 +177,29 @@ class sfPropelActAsTaggableBehavior
       else
       {
         $saved_tags = $this->getSavedTags($object);
+
+        if (sfConfig::get('app_sfPropelActAsTaggableBehaviorPlugin_triple_distinct', false))
+        {
+          // the binome namespace:key must be unique
+          $triple = sfPropelActAsTaggableToolkit::extractTriple($tagname);
+
+          if (!is_null($triple[1]) && !is_null($triple[2]))
+          {
+            $pattern = '/^'.$triple[1].':'.$triple[2].'=(.*)$/';
+            $tags = $object->getTags(array('triple' => true, 'return' => 'tag'));
+            $removed = array();
+
+            foreach ($tags as $tag)
+            {
+              if (preg_match($pattern, $tag))
+              {
+                $removed[] = $tag;
+              }
+            }
+
+            $object->removeTag($removed);
+          }
+        }
 
         if (!isset($saved_tags[$tagname]))
         {

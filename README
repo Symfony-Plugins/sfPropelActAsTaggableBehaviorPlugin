@@ -100,6 +100,13 @@ $city->addTag('geo:lat=47.3456');
 $city->save();
 }}}
 
+By default, the plugin will allow to attach several triple tags with the same namespaces and key for one given object. That is, you could attach the tags "geo:lat=36.5" and "geo:lat=43.2" to the same object. If this behavior doesn't make you happy, you may want to tweak the plugin's configuration in the {{{app.yml}}} file of your project:
+{{{
+all:
+  sfPropelActAsTaggableBehaviorPlugin:
+    triple_distinct:   true
+}}}
+
 === Retrieving one object's tags ===
 It is possible to retrieve tags from a taggable object:
 {{{
@@ -212,6 +219,15 @@ $objects = TagPeer::getTaggedWith('tutu, toto, tata, titi',
                                   array('nb_common_tags' => 2));
 }}}
 
+The methods {{{TagPeer::getRelatedTags()}}}, {{{TagPeer::getTaggedWith()}}}, and {{{TagPeer::getTaggedWithCriteria()}}} accept one additional parameter, "{{{nb_common_tags}}}", that permits to select objects that share a certain number of tags in common with the given tags list. For instance:
+{{{
+#!php
+<?php
+// this will return all the objects that are at least tagged with 2 tags in the 
+// list "tata", "titi", "tutu", and "toto".
+$objects = TagPeer::getTaggedWith('tata, titi, tutu, toto', array('nb_common_tags' => 2));
+}}}
+
 === Tags cloud generation ===
 The plugin also proposes methods and helpers for generating tags cloud:
 {{{
@@ -221,14 +237,15 @@ The plugin also proposes methods and helpers for generating tags cloud:
 $tags = TagPeer::getPopulars();
 
 // display the tags cloud. The tags will use the route name "@tag" which tags
-// the request parameter "tags"
+// the request parameter "tags". The %s element of the route represents the 
+// position of the tag
 echo tag_cloud($tags, '@tag?tags=%s');
 }}}
 
 The default size of the tag cloud is 100 items, but this value might be tweaked in app.yml:
 {{{
 all:
-  tags:
+  sfPropelActAsTaggableBehaviorPlugin:
     limit:   50
 }}}
 
@@ -240,9 +257,28 @@ When you click on a tag in a tag cloud, you will want to get a list of objects t
 $tags = TagPeer::getRelatedTags('toto,tutu', array('model' => 'Post'));
 
 // displays the related tags cloud, using the route "@post_tags" with the
-// request parameter "tags"
+// request parameter "tags". Please note that there is no %s in the route, 
+// on the contrary to the tag_cloud() helper
 echo related_tag_cloud($tags, '@post_tags?tags=', 'toto,tutu');
 }}}
+
+This helper accepts several options:
+ * {{{add}}}: text to be used, after each tag, as a link for adding this tag to the current selection
+ * {{{class}}}: class of the tags cloud. By default, the class "tags-cloud" is used
+ 
+You might also want to display the tags of one item. The {{{tag_list()}}} helper is done for this:
+{{{
+#!php
+<?php
+$post = PostPeer::retrieveByPk(1);
+$tags = $post->getTags();
+echo tag_list($tags, '@tag?tag=');
+}}}
+
+This helper accepts several options:
+ * {{{class}}}: class of the tags list. By default, the class "tags-list" is used
+ * {{{ordered}}}: by default, the helper will generate an unordered list (HTML {{{<ul>...</ul>}}} tag). When this option is set to true, the helper will generate an ordered list (HTML {{{<ol>...</ol>}}} tag).
+ * {{{separator}}}: separator to be used between two tags. If this option is not added, no separator will be used.
 
 === Specialize your tag clouds ===
 The tag retrieval mecanism is fully based on Criterias, so it is easy to pass
@@ -288,10 +324,10 @@ $triple_tags = TagPeer::getAll(null, array('triple' => true));
 // returns only triple tags from the namespace "geo"
 $geo_tags = TagPeer::getAll(null, array('triple' => true, 'namespace' => 'geo'));
 
-// returns only triple tags with teh key "lat"
+// returns only triple tags with the key "lat"
 $lat_tags = TagPeer::getAll(null, array('triple' => true, 'key' => 'lat'));
 
-// returns only triple tags with teh value "12"
+// returns only triple tags with the value "12"
 $value_tags = TagPeer::getAll(null, array('triple' => true, 'value' => '12'));
 }}}
 
@@ -336,7 +372,7 @@ The behavior implement the following methods:
  * '''removeAllTags()''' - Removes all the tags of the object.
  * '''removeTag($tagname)''' - Removes a tag or a set of tags from the object.
  * '''replaceTag($tagname, $replacement = null)''' - Replaces a tag with an other one.
- * '''setTags($tagname)''' - Sets teh tags of the object. If previous tags were attached to the object, they are removed.
+ * '''setTags($tagname)''' - Sets the tags of the object. If previous tags were attached to the object, they are removed.
 
 The behavior class also implement the following method, which is a facility for preloading all the tags for a set of taggable objects
  * '''preloadTags($objects)''' - Preload tags for a set of objects.
@@ -360,16 +396,20 @@ This plugin has been developed by [http://lacot.org/ Xavier Lacot] and is licens
 
 == Changelog ==
 
+=== trunk ===
+ * added the "ordered" option to the {{{tag_list()}}} helper
+ * allowed triple tags to be unique for a given object, namespace and key, using a plugin's setting
+
 === version 0.6 - 2008-05-10 ===
  * added "nb_common_tags" option, that permits to select objects having a certain number of tags within a given tags list
  * added the possibility to retrieve the triple tags of an object that meet certain constraints (namespace, etc.)
- * added "separator" option in the tag_list() helper
- * improved preloadTags() performance, in case all the objects don't have a tag
+ * added the "separator" option to the {{{tag_list()}}} helper
+ * improved {{{preloadTags()}}} performance, in case all the objects don't have a tag
 
 === version 0.5 - 2008-03-21 ===
  * compatibility with Symfony 1.1
  * added {{{setTags()}}} method
- * renamed table names in order to use the sf_ prefix
+ * renamed table names in order to use the "sf_" prefix
 
 === version 0.4 - 2007-12-11 ===
  * added machine tags support (also called "triple tags") (thanks to Michael Nolan)

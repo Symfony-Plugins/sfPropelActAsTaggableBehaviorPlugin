@@ -39,7 +39,7 @@ $browser = new sfTestBrowser();
 $browser->initialize();
 
 // start tests
-$t = new lime_test(63, new lime_output_color());
+$t = new lime_test(65, new lime_output_color());
 
 
 // these tests check for the tags attachement consistency
@@ -409,8 +409,9 @@ $ns = $object2->getTags(array('is_triple' => true,
                               'return'    => 'namespace'));
 $t->ok(count($ns) == 4, 'The method getTags() permit to select only the names of the namespaces of the tags attached to one object.');
 
-// these tests check for TagPeer triple tags specific methods (tag clouds generation)
 
+// these tests check for TagPeer triple tags specific methods (tag clouds generation)
+sfConfig::set('app_sfPropelActAsTaggableBehaviorPlugin_triple_distinct', false);
 $t->diag('querying triple tagging');
 
 $tags_triple = TagPeer::getAll(null, array('triple' => true));
@@ -471,6 +472,41 @@ $t->ok($result === array('ns:key=tutu'), 'it is possible to search for triple ta
 
 $objects_triple = TagPeer::getTaggedWith(array(), array('namespace' => 'ns', 'model' => 'Post'));
 $t->ok(count($objects_triple) == 1, 'it is possible to retrieve objects tagged with certain triple tags.');
+
+
+// these tests check for the behavior of the triple tags when the plugin is set
+// up so that namespace:key is a unique key
+
+// clean the database
+TagPeer::doDeleteAll();
+TaggingPeer::doDeleteAll();
+call_user_func(array(_create_object()->getPeer(), 'doDeleteAll'));
+
+sfConfig::set('app_sfPropelActAsTaggableBehaviorPlugin_triple_distinct', true);
+$t->diag('querying triple tagging');
+
+$object = _create_object();
+$object->addTag('tutu');
+$object->save();
+
+$object = _create_object();
+$object->addTag('ns:key=value');
+$object->addTag('ns:key=tutu');
+$object->addTag('ns:key=titi');
+$object->addTag('ns:second_key=toto');
+$object->save();
+
+$tags_triple = TagPeer::getAll(null, array('triple' => true, 'namespace' => 'ns'));
+$t->ok(count($tags_triple) == 2, 'it is possible to set up the plugin so that namespace:key is a unique key.');
+
+$object2 = _create_object();
+$object2->addTag('ns:key=value');
+$object2->addTag('ns:second_key=toto');
+$object2->save();
+
+$tags_triple = TagPeer::getAll(null, array('triple' => true, 'namespace' => 'ns'));
+$t->ok(count($tags_triple) == 3, 'it is possible to apply triple tags to various objects when the plugin is set up so that namespace:key is a unique key.');
+
 
 
 // test object creation
