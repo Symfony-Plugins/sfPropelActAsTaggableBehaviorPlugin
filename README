@@ -399,6 +399,8 @@ This plugin has been developed by [http://lacot.org/ Xavier Lacot] and is licens
 === trunk ===
  * added the "ordered" option to the {{{tag_list()}}} helper
  * allowed triple tags to be unique for a given object, namespace and key, using a plugin's setting
+ * fixed bug in tags removal. Whan calling {{{removeAllTags()}}} or {{{setTags()}}} twice before saving an object, the tags were not removed. A big thank to Tom Boutell
+ * BC break: the definition of the maximal number of tags to be retrieved with {{{TagPeer::getPopulars()}}} is now defined with {{{app_sfPropelActAsTaggableBehaviorPlugin_limit}}} (previously with {{{app_tags_limit}}})
 
 === version 0.6 - 2008-05-10 ===
  * added "nb_common_tags" option, that permits to select objects having a certain number of tags within a given tags list

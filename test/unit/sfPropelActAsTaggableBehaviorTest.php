@@ -39,7 +39,7 @@ $browser = new sfTestBrowser();
 $browser->initialize();
 
 // start tests
-$t = new lime_test(65, new lime_output_color());
+$t = new lime_test(66, new lime_output_color());
 
 
 // these tests check for the tags attachement consistency
@@ -154,6 +154,13 @@ $t->ok((count($object2_tags) == 2) && (count($object_tags) == 3), 'removing one 
 
 $object2_tags = $object2->getTags(array('serialized' => true));
 $t->ok($object2_tags == 'clever age, symfony', 'tags can be retrieved in a serialized form.');
+
+$object->removeAllTags();
+$object->setTags('');
+$object->save();
+$id = $object->getPrimaryKey();
+$object = call_user_func(array(_create_object()->getPeer(), 'retrieveByPk'), $id);
+$t->ok(count($object->getTags()) == 0, 'when the tags are set twice, or all removed twice, before the object is saved, then all the prvious tags are still removed.');
 
 unset($object, $object2, $object2_copy);
 

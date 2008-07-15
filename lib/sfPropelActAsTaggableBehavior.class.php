@@ -513,7 +513,9 @@ class sfPropelActAsTaggableBehavior
 
     self::set_saved_tags($object, array());
     self::set_tags($object, array());
-    self::set_removed_tags($object, $saved_tags);
+    self::set_removed_tags($object, 
+                           array_merge(self::get_removed_tags($object), 
+                                       $saved_tags));
   }
 
   /**
