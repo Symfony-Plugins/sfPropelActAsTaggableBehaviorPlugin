@@ -15,6 +15,8 @@ This behavior permits to attach tags to Propel objects. It includes tag-clouds g
  * unit-tested
  * [http://www.flickr.com/groups/api/discuss/72157594497877875/ machine tags] support (also called "triple tags")
  * easy tags fixtures loading
+ * supports Symfony 1.0 and 1.1
+ * supports Propel 1.2 and 1.3
 
 == Philosophy of the stuff ==
 
@@ -223,7 +225,7 @@ The methods {{{TagPeer::getRelatedTags()}}}, {{{TagPeer::getTaggedWith()}}}, and
 {{{
 #!php
 <?php
-// this will return all the objects that are at least tagged with 2 tags in the 
+// this will return all the objects that are at least tagged with 2 tags in the
 // list "tata", "titi", "tutu", and "toto".
 $objects = TagPeer::getTaggedWith('tata, titi, tutu, toto', array('nb_common_tags' => 2));
 }}}
@@ -237,7 +239,7 @@ The plugin also proposes methods and helpers for generating tags cloud:
 $tags = TagPeer::getPopulars();
 
 // display the tags cloud. The tags will use the route name "@tag" which tags
-// the request parameter "tags". The %s element of the route represents the 
+// the request parameter "tags". The %s element of the route represents the
 // position of the tag
 echo tag_cloud($tags, '@tag?tags=%s');
 }}}
@@ -257,7 +259,7 @@ When you click on a tag in a tag cloud, you will want to get a list of objects t
 $tags = TagPeer::getRelatedTags('toto,tutu', array('model' => 'Post'));
 
 // displays the related tags cloud, using the route "@post_tags" with the
-// request parameter "tags". Please note that there is no %s in the route, 
+// request parameter "tags". Please note that there is no %s in the route,
 // on the contrary to the tag_cloud() helper
 echo related_tag_cloud($tags, '@post_tags?tags=', 'toto,tutu');
 }}}
@@ -265,7 +267,7 @@ echo related_tag_cloud($tags, '@post_tags?tags=', 'toto,tutu');
 This helper accepts several options:
  * {{{add}}}: text to be used, after each tag, as a link for adding this tag to the current selection
  * {{{class}}}: class of the tags cloud. By default, the class "tags-cloud" is used
- 
+
 You might also want to display the tags of one item. The {{{tag_list()}}} helper is done for this:
 {{{
 #!php
@@ -391,10 +393,16 @@ The plugin has been deeply unit-tested, if not fully. The tests are located in t
      $ php ./plugins/sfPropelActAsTaggableBehaviorPlugin/test/unit/sfPropelActAsTaggableBehaviorTest.php
    }}}
 
+Please note that when using the plugin with Propel 1.3, you must deactivate Propel's instance pooling in order to have all the tests pass. Else, the tags are not attached independently to various instances of the same object.
+
 == License and credits ==
 This plugin has been developed by [http://lacot.org/ Xavier Lacot] and is licensed under the MIT license.
 
 == Changelog ==
+
+=== version 0.8 - 2008-09-22 ===
+ * Added support for Propel 1.3 (thanks to fullo)
+ * fixed typo in the documentation
 
 === version 0.7 - 2008-07-15 ===
  * added the "ordered" option to the {{{tag_list()}}} helper

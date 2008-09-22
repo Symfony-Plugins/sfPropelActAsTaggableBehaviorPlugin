@@ -10,21 +10,19 @@
   <email>xavier@lacot.org</email>
   <active>yes</active>
  </lead>
- <date>2008-07-16</date>
+ <date>2008-09-22</date>
  <time>00:05:22</time>
  <version>
-  <release>0.7.0</release>
-  <api>0.7.0</api>
+  <release>0.8.0</release>
+  <api>0.8.0</api>
  </version>
  <stability>
   <release>beta</release>
   <api>beta</api>
  </stability>
  <license uri="http://www.symfony-project.com/license">MIT license</license>
- <notes>* added the "ordered" option to the {{{tag_list()}}} helper
- * allowed triple tags to be unique for a given object, namespace and key, using a plugin's setting
- * fixed bug in tags removal. Whan calling {{{removeAllTags()}}} or {{{setTags()}}} twice before saving an object, the tags were not removed. A big thank to Tom Boutell
- * BC break: the definition of the maximal number of tags to be retrieved with {{{TagPeer::getPopulars()}}} is now defined with {{{app_sfPropelActAsTaggableBehaviorPlugin_limit}}} (previously with {{{app_tags_limit}}})
+ <notes>* Added support for Propel 1.3 (thanks to fullo)
+* fixed typo in the documentation
  </notes>
  <contents>
   <dir name="/">
@@ -84,6 +82,20 @@
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <version>
+    <release>0.8.0</release>
+    <api>0.8.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2008-09-22</date>
+   <license uri="http://www.symfony-project.com/license">MIT license</license>
+   <notes>* Added support for Propel 1.3 (thanks to fullo)
+ * fixed typo in the documentation</notes>
+  </release>
   <release>
    <version>
     <release>0.7.0</release>
