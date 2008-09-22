@@ -18,7 +18,7 @@ This behavior permits to attach tags to Propel objects. It includes tag-clouds g
 
 == Philosophy of the stuff ==
 
- * taggable models must have a primary key
+ * taggable models must have a single-column primary key
  * tags are saved when the object is saved, not before
  * one object cannot be tagged twice with the same tag. When trying to use twice the same tag on one object, the second tagging will be ignored
  * the tags associated to one taggable object are only loaded when necessary. Then they are cached.
@@ -210,7 +210,7 @@ $tutu_toto_objects = TagPeer::getTaggedWith(array(), array('namespace' => 'geo')
 // specific tags
 $criteria = TagPeer::getTaggedWithCriteria('Post', 'tutu, toto');
 $criteria->add(PostPeer::PUBLISHED, true);
-$posts = PostPeer::doSelect($c);
+$posts = PostPeer::doSelect($criteria);
 
 // gets objects that are tagged with a certain number of tags within a set of
 // tags. For instance, the following line returns all the object tagged with at
