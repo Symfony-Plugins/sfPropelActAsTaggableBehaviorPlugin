@@ -81,7 +81,7 @@ class TagPeer extends BaseTagPeer
   {
     $tags = array();
 
-    if ($c == null)
+    if (null === $c)
     {
       $c = new Criteria();
     }
@@ -122,16 +122,29 @@ class TagPeer extends BaseTagPeer
     }
 
     $c->addSelectColumn(TagPeer::NAME);
-    $c->addSelectColumn(TaggingPeer::COUNT);
+    $c->addSelectColumn('COUNT('.TagPeer::NAME.') as counter');
     $c->addJoin(TagPeer::ID, TaggingPeer::TAG_ID);
     $c->addGroupByColumn(TaggingPeer::TAG_ID);
-    $c->addDescendingOrderByColumn(TaggingPeer::COUNT);
+    $c->addDescendingOrderByColumn('counter');
     $c->addAscendingOrderByColumn(TagPeer::NAME);
-    $rs = TagPeer::doSelectRS($c);
 
-    while ($rs->next())
+    if (Propel::VERSION >= '1.3')
     {
-      $tags[$rs->getString(1)] = $rs->getInt(2);
+      $rs = TagPeer::doSelectStmt($c);
+
+      while ($row = $rs->fetch(PDO::FETCH_NUM))
+      {
+        $tags[$row[0]] = $row[1];
+      }
+    }
+    else
+    {
+      $rs = TagPeer::doSelectRS($c);
+
+      while ($rs->next())
+      {
+        $tags[$rs->getString(1)] = $rs->getInt(2);
+      }
     }
 
     if (!isset($options['sort_by_popularity']) || (true !== $options['sort_by_popularity']))
@@ -187,12 +200,25 @@ class TagPeer extends BaseTagPeer
     }
 
     $stmt->setString($position, count($tags));
-    $rs = $stmt->executeQuery(ResultSet::FETCHMODE_NUM);
     $models = array();
 
-    while ($rs->next())
+    if (Propel::VERSION >= '1.3')
     {
-      $models[] = $rs->getString(1);
+      $rs = $stmt->query();
+
+      while ($rs->fecth(PDO::FETCH_NUM))
+      {
+        $models[] = $rs->getString(1);
+      }
+    }
+    else
+    {
+      $rs = $stmt->executeQuery(ResultSet::FETCHMODE_NUM);
+
+      while ($rs->next())
+      {
+        $models[] = $rs->getString(1);
+      }
     }
 
     return $models;
@@ -213,7 +239,7 @@ class TagPeer extends BaseTagPeer
    */
   public static function getPopulars($c = null, $options = array())
   {
-    if ($c == null)
+    if (null === $c)
     {
       $c = new Criteria();
     }
@@ -392,7 +418,7 @@ class TagPeer extends BaseTagPeer
     if (count($tags) > 0)
     {
       $c->add(TagPeer::NAME, $tags, Criteria::IN);
-      $having = $c->getNewCriterion(TagPeer::COUNT, count($tags), Criteria::GREATER_EQUAL);
+      $having = $c->getNewCriterion('COUNT('.TaggingPeer::TAGGABLE_MODEL.') ', count($tags), Criteria::GREATER_EQUAL);
       $c->addHaving($having);
     }
 
@@ -440,43 +466,88 @@ class TagPeer extends BaseTagPeer
     $param = array();
     $sql = BasePeer::createSelectSql($c, $param);
     $con = Propel::getConnection();
-    $stmt = $con->prepareStatement($sql);
-    $position = 1;
 
-    foreach ($tags as $tag)
+    if (Propel::VERSION < '1.3')
     {
-      $stmt->setString($position, $tag);
-      $position++;
+      $stmt = $con->prepareStatement($sql);
+      $position = 1;
+
+      foreach ($tags as $tag)
+      {
+        $stmt->setString($position, $tag);
+        $position++;
+      }
+
+      if (isset($options['model']))
+      {
+        $stmt->setString($position, $options['model']);
+        $position++;
+      }
+
+      if (isset($options['triple']))
+      {
+        $stmt->setBoolean($position, $options['triple']);
+        $position++;
+      }
+
+      if (isset($options['namespace']))
+      {
+        $stmt->setString($position, $options['namespace']);
+        $position++;
+      }
+
+      if (isset($options['key']))
+      {
+        $stmt->setString($position, $options['key']);
+        $position++;
+      }
+
+      if (isset($options['value']))
+      {
+        $stmt->setString($position, $options['value']);
+        $position++;
+      }
     }
-
-    if (isset($options['model']))
+    else
     {
-      $stmt->setString($position, $options['model']);
-      $position++;
-    }
+      $stmt = $con->prepare($sql);
+      $position = 1;
 
-    if (isset($options['triple']))
-    {
-      $stmt->setBoolean($position, $options['triple']);
-      $position++;
-    }
+      foreach ($tags as $tag)
+      {
+        $stmt->bindValue(':p'.$position, $tag, PDO::PARAM_STR);
+        $position++;
+      }
 
-    if (isset($options['namespace']))
-    {
-      $stmt->setString($position, $options['namespace']);
-      $position++;
-    }
+      if (isset($options['model']))
+      {
+        $stmt->bindValue(':p'.$position, $options['model'], PDO::PARAM_STR);
+        $position++;
+      }
 
-    if (isset($options['key']))
-    {
-      $stmt->setString($position, $options['key']);
-      $position++;
-    }
+      if (isset($options['triple']))
+      {
+        $stmt->bindValue(':p'.$position, $options['triple']);
+        $position++;
+      }
 
-    if (isset($options['value']))
-    {
-      $stmt->setString($position, $options['value']);
-      $position++;
+      if (isset($options['namespace']))
+      {
+        $stmt->bindValue(':p'.$position, $options['namespace'], PDO::PARAM_STR);
+        $position++;
+      }
+
+      if (isset($options['key']))
+      {
+        $stmt->bindValue(':p'.$position, $options['key'], PDO::PARAM_STR);
+        $position++;
+      }
+
+      if (isset($options['value']))
+      {
+        $stmt->bindValue(':p'.$position, $options['value'], PDO::PARAM_STR);
+        $position++;
+      }
     }
 
     if (!isset($options['nb_common_tags'])
@@ -485,20 +556,51 @@ class TagPeer extends BaseTagPeer
       $options['nb_common_tags'] = count($tags);
     }
 
-    $stmt->setString($position, $options['nb_common_tags']);
-    $rs = $stmt->executeQuery(ResultSet::FETCHMODE_NUM);
+    if ($options['nb_common_tags'] > 0)
+    {
+      if (Propel::VERSION >= '1.3')
+      {
+        $stmt->bindValue(':p'.$position, $options['nb_common_tags'], PDO::PARAM_STR);
+      }
+      else
+      {
+        $stmt->setString($position, $options['nb_common_tags']);
+      }
+    }
+
     $taggings = array();
 
-    while ($rs->next())
+    if (Propel::VERSION >= '1.3')
     {
-      $model = $rs->getString(1);
+      $rs = $stmt->execute();
 
-      if (!isset($taggings[$model]))
+      while ($row = $stmt->fetch(PDO::FETCH_NUM))
       {
-        $taggings[$model] = array();
-      }
+        $model = $row[0];
 
-      $taggings[$model][] = $rs->getInt(2);
+        if (!isset($taggings[$model]))
+        {
+          $taggings[$model] = array();
+        }
+
+        $taggings[$model][] = $row[1];
+      }
+    }
+    else
+    {
+      $rs = $stmt->executeQuery(ResultSet::FETCHMODE_NUM);
+
+      while ($rs->next())
+      {
+        $model = $rs->getString(1);
+
+        if (!isset($taggings[$model]))
+        {
+          $taggings[$model] = array();
+        }
+
+        $taggings[$model][] = $rs->getInt(2);
+      }
     }
 
     return $taggings;

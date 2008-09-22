@@ -396,14 +396,27 @@ class sfPropelActAsTaggableBehavior
     }
 
     // remove removed tags
+    $removed_tag_ids = array();
     $c = new Criteria();
     $c->add(TagPeer::NAME, $removed_tags, Criteria::IN);
-    $rs = TagPeer::doSelectRS($c);
-    $removed_tag_ids = array();
 
-    while ($rs->next())
+    if (Propel::VERSION >= '1.3')
     {
-      $removed_tag_ids[] = $rs->getInt(1);
+      $rs = TagPeer::doSelectStmt($c);
+
+      while ($row = $rs->fetch(PDO::FETCH_ASSOC))
+      {
+        $removed_tag_ids[] = intval($row['ID']);
+      }
+    }
+    else
+    {
+      $rs = TagPeer::doSelectRS($c);
+
+      while ($rs->next())
+      {
+        $removed_tag_ids[] = $rs->getInt(1);
+      }
     }
 
     $c = new Criteria();
@@ -483,20 +496,42 @@ class sfPropelActAsTaggableBehavior
                          TaggingPeer::TAGGABLE_ID);
         $stmt = $con->prepareStatement($query);
         $stmt->setString(1, $model);
-        $rs = $stmt->executeQuery();
 
-        while ($rs->next())
+        if (Propel::VERSION >= '1.3')
         {
-          $object = $instances[$rs->getInt('id')];
-          $object_tags = explode(',', $rs->getString('tags'));
-          $tags = array();
+          $rs = $stmt->executeQuery();
 
-          foreach ($object_tags as $tag)
+          while ($rs->next())
           {
-            $tags[$tag] = $tag;
-          }
+            $object = $instances[$rs->getInt('id')];
+            $object_tags = explode(',', $rs->getString('tags'));
+            $tags = array();
 
-          self::set_saved_tags($object, $tags);
+            foreach ($object_tags as $tag)
+            {
+              $tags[$tag] = $tag;
+            }
+
+            self::set_saved_tags($object, $tags);
+          }
+        }
+        else
+        {
+          $rs = $con->query($sql);
+
+          while ($row = $rs->fetch(PDO::FETCH_ASSOC))
+          {
+            $object = $instances[$row['id']];
+            $object_tags = explode(',', $row['tags']);
+            $tags = array();
+
+            foreach ($object_tags as $tag)
+            {
+              $tags[$tag] = $tag;
+            }
+
+            self::set_saved_tags($object, $tags);
+          }
         }
       }
     }
@@ -513,8 +548,8 @@ class sfPropelActAsTaggableBehavior
 
     self::set_saved_tags($object, array());
     self::set_tags($object, array());
-    self::set_removed_tags($object, 
-                           array_merge(self::get_removed_tags($object), 
+    self::set_removed_tags($object,
+                           array_merge(self::get_removed_tags($object),
                                        $saved_tags));
   }
 
