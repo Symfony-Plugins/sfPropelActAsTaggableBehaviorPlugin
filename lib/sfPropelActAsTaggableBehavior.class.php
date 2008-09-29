@@ -497,7 +497,7 @@ class sfPropelActAsTaggableBehavior
         $stmt = $con->prepareStatement($query);
         $stmt->setString(1, $model);
 
-        if (Propel::VERSION >= '1.3')
+        if (Propel::VERSION < '1.3')
         {
           $rs = $stmt->executeQuery();
 
