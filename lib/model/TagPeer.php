@@ -403,7 +403,7 @@ class TagPeer extends BaseTagPeer
    * @param      array       $options   Array of options parameters
    * @return     array
    */
-  protected static function getTaggings($tags = array(), $options = array())
+  public static function getTaggings($tags = array(), $options = array())
   {
     $tags = sfPropelActAsTaggableToolkit::explodeTagString($tags);
 
