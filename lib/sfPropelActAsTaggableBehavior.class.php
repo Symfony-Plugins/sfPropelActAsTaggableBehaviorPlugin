@@ -367,8 +367,8 @@ class sfPropelActAsTaggableBehavior
       }
       else
       {
-        $msg = sprintf('hasTag() does not support this type of argument : %s.', get_class($tag));
-        throw new Exception($msg);
+        $msg = sprintf('sfPropelActAsTaggableBehavior::hasTag() does not support this type of argument : %s.', get_class($tag));
+        throw new sfException($msg);
       }
     }
   }
@@ -494,11 +494,11 @@ class sfPropelActAsTaggableBehavior
                          TaggingPeer::TAG_ID,
                          TagPeer::ID,
                          TaggingPeer::TAGGABLE_ID);
-        $stmt = $con->prepareStatement($query);
-        $stmt->setString(1, $model);
 
         if (Propel::VERSION < '1.3')
         {
+          $stmt = $con->prepareStatement($query);
+          $stmt->setString(1, $model);
           $rs = $stmt->executeQuery();
 
           while ($rs->next())
@@ -517,9 +517,11 @@ class sfPropelActAsTaggableBehavior
         }
         else
         {
-          $rs = $con->query($sql);
+          $stmt = $con->prepare($query);
+          $stmt->bindValue(1, $model);
+          $stmt->execute();
 
-          while ($row = $rs->fetch(PDO::FETCH_ASSOC))
+          while ($row = $stmt->fetch())
           {
             $object = $instances[$row['id']];
             $object_tags = explode(',', $row['tags']);
