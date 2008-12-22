@@ -14,8 +14,24 @@ if (!$app)
   throw new Exception('No app has been detected in this project');
 }
 
-require_once($sf_root_dir.'/test/bootstrap/functional.php');
-require_once($sf_symfony_lib_dir.'/vendor/lime/lime.php');
+// initialize database manager
+require_once($sf_root_dir.'/test/bootstrap/unit.php');
+
+if (SYMFONY_VERSION >= 1.1)
+{
+  $configuration = ProjectConfiguration::getApplicationConfiguration($app, 'test', true);
+  $databaseManager = new sfDatabaseManager($configuration);
+}
+else
+{
+  // initialize database manager
+  require_once($sf_root_dir.'/test/bootstrap/functional.php');
+  require_once($sf_symfony_lib_dir.'/vendor/lime/lime.php');
+
+  $databaseManager = new sfDatabaseManager();
+  $databaseManager->initialize();
+  $con = Propel::getConnection();
+}
 
 if (!defined('TEST_CLASS') || !class_exists(TEST_CLASS)
     || !defined('TEST_CLASS_2') || !class_exists(TEST_CLASS_2))
@@ -24,22 +40,17 @@ if (!defined('TEST_CLASS') || !class_exists(TEST_CLASS)
   return;
 }
 
-// initialize database manager
-$databaseManager = new sfDatabaseManager();
-$databaseManager->initialize();
-$con = Propel::getConnection();
-
 // clean the database
 TagPeer::doDeleteAll();
 TaggingPeer::doDeleteAll();
 call_user_func(array(_create_object()->getPeer(), 'doDeleteAll'));
 
 // create a new test browser
-$browser = new sfTestBrowser();
-$browser->initialize();
+// $browser = new sfTestBrowser();
+// $browser->initialize();
 
 // start tests
-$t = new lime_test(66, new lime_output_color());
+$t = new lime_test(67, new lime_output_color());
 
 
 // these tests check for the tags attachement consistency
@@ -318,6 +329,19 @@ $tagged_with_tag127 = TagPeer::getTaggedWith('tag1, tag2, tag7',
                                              array('nb_common_tags' => 2));
 $t->ok(count($tagged_with_tag127) == 6, 'the "nb_common_tags" option of getTaggedWith() returns objects tagged with a certain number of tags within a set of specific tags.');
 
+
+// these tests check the preloadTags() method
+sfPropelActAsTaggableBehavior::preloadTags($tagged_with_tag17);
+$nb_tags = 0;
+
+foreach ($tagged_with_tag17 as $tmp_object)
+{
+  $nb_tags += count($tmp_object->getTags());
+}
+
+$t->ok($nb_tags === 10, 'preloadTags() preloads the tags of the objects.');
+
+
 // these tests check the isTaggable() method
 $t->diag('detecting if a model is taggable or not');
 
@@ -327,14 +351,13 @@ $object = _create_object();
 $t->ok(sfPropelActAsTaggableToolkit::isTaggable($object) === true, 'it is possible to tell if a model is taggable from one of its instances.');
 $t->ok(sfPropelActAsTaggableToolkit::isTaggable('Tristan\'s cat') === false, 'Tristan\'s cat is not taggable, and that is fine.');
 
-
+// clean the database
 TagPeer::doDeleteAll();
 TaggingPeer::doDeleteAll();
 call_user_func(array(_create_object()->getPeer(), 'doDeleteAll'));
 
 
 // these tests check for the application of triple tags
-
 $t->diag('applying triple tagging');
 
 $t->ok(sfPropelActAsTaggableToolkit::extractTriple('ns:key=value') === array('ns:key=value', 'ns', 'key', 'value'), 'triple extracted successfully.');
@@ -364,7 +387,6 @@ $t->ok(!$tag->getIsTriple(), 'a non tripled tag created from a string is not ide
 
 // these tests check the retrieval of the tags of one object, based on
 // triple-tags constraints
-
 $t->diag('retrieving triple tags, and extracting only parts of it');
 
 $object = _create_object();
@@ -445,7 +467,6 @@ $t->ok(!in_array('ns:key=value', $result), 'triple tags are not returned when se
 
 
 // these tests the search of specific triple tags parts
-
 $t->diag('searching for specific parts of triple');
 $tags_triple = TagPeer::getAll(null, array('triple' => true, 'namespace' => 'ns'));
 $result = array();
@@ -477,18 +498,18 @@ foreach ($tags_triple as $tag)
 
 $t->ok($result === array('ns:key=tutu'), 'it is possible to search for triple tags by value.');
 
-$objects_triple = TagPeer::getTaggedWith(array(), array('namespace' => 'ns', 'model' => 'Post'));
+$objects_triple = TagPeer::getTaggedWith(array(), array('namespace' => 'ns', 'model' => TEST_CLASS));
 $t->ok(count($objects_triple) == 1, 'it is possible to retrieve objects tagged with certain triple tags.');
 
-
-// these tests check for the behavior of the triple tags when the plugin is set
-// up so that namespace:key is a unique key
 
 // clean the database
 TagPeer::doDeleteAll();
 TaggingPeer::doDeleteAll();
 call_user_func(array(_create_object()->getPeer(), 'doDeleteAll'));
 
+
+// these tests check for the behavior of the triple tags when the plugin is set
+// up so that namespace:key is a unique key
 sfConfig::set('app_sfPropelActAsTaggableBehaviorPlugin_triple_distinct', true);
 $t->diag('querying triple tagging');
 
