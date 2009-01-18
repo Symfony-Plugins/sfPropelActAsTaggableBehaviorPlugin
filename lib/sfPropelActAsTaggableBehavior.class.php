@@ -395,35 +395,38 @@ class sfPropelActAsTaggableBehavior
       $tagging->save();
     }
 
-    // remove removed tags
-    $removed_tag_ids = array();
-    $c = new Criteria();
-    $c->add(TagPeer::NAME, $removed_tags, Criteria::IN);
-
-    if (Propel::VERSION >= '1.3')
+    // remove removed tags, if any present
+    if (count($removed_tags) > 0)
     {
-      $rs = TagPeer::doSelectStmt($c);
+      $removed_tag_ids = array();
+      $c = new Criteria();
+      $c->add(TagPeer::NAME, $removed_tags, Criteria::IN);
 
-      while ($row = $rs->fetch(PDO::FETCH_ASSOC))
+      if (Propel::VERSION >= '1.3')
       {
-        $removed_tag_ids[] = intval($row['ID']);
-      }
-    }
-    else
-    {
-      $rs = TagPeer::doSelectRS($c);
+        $rs = TagPeer::doSelectStmt($c);
 
-      while ($rs->next())
+        while ($row = $rs->fetch(PDO::FETCH_ASSOC))
+        {
+          $removed_tag_ids[] = intval($row['ID']);
+        }
+      }
+      else
       {
-        $removed_tag_ids[] = $rs->getInt(1);
-      }
-    }
+        $rs = TagPeer::doSelectRS($c);
 
-    $c = new Criteria();
-    $c->add(TaggingPeer::TAG_ID, $removed_tag_ids, Criteria::IN);
-    $c->add(TaggingPeer::TAGGABLE_ID, $object->getPrimaryKey());
-    $c->add(TaggingPeer::TAGGABLE_MODEL, get_class($object));
-    TaggingPeer::doDelete($c);
+        while ($rs->next())
+        {
+          $removed_tag_ids[] = $rs->getInt(1);
+        }
+      }
+
+      $c = new Criteria();
+      $c->add(TaggingPeer::TAG_ID, $removed_tag_ids, Criteria::IN);
+      $c->add(TaggingPeer::TAGGABLE_ID, $object->getPrimaryKey());
+      $c->add(TaggingPeer::TAGGABLE_MODEL, get_class($object));
+      TaggingPeer::doDelete($c);
+    }
 
     $tags = array_merge(self::get_tags($object), $this->getSavedTags($object));
     self::set_saved_tags($object, $tags);
