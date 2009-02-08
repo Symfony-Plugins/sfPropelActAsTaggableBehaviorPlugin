@@ -380,6 +380,11 @@ class sfPropelActAsTaggableBehavior
    */
   public function postSave(BaseObject $object)
   {
+    if (is_null($object->getPrimaryKey()))
+    {
+      return;
+    }
+
     $tags = self::get_tags($object);
     $removed_tags = self::get_removed_tags($object);
 
